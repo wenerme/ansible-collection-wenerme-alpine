@@ -1,0 +1,41 @@
+- name: required packages
+  become: true
+  package:
+    name: "{{item}}"
+    state: present
+  loop:
+  - e2fsprogs-extra
+  - util-linux
+
+- name: detect root mount
+  block:
+  - shell: sed -nr 's#^(/\S+)\s+/\s+.*#\1#p' /proc/mounts
+    register: shell_result
+    changed_when: false
+  - set_fact:
+      root_part: "{{shell_result.stdout}}"
+  - shell: lsblk -no pkname {{root_part}}
+    register: shell_result
+    changed_when: false
+  - set_fact:
+      root_dev: "/dev/{{shell_result.stdout}}"
+  when: root_dev is undefined
+
+- name: set root part
+  set_fact:
+    root_part: "{{root_dev}}2"
+  when: root_part is undefined
+
+- name: resizing
+  debug:
+    msg: "Device {{root_dev}} - Partition {{root_part}}"
+
+- name: repartition - expand last partation
+  become: true
+  raw: echo -e 'd\n\nn\n\n\n\n\n\np\nw\n' | fdisk {{root_dev}}
+  register: repartition
+
+- name: resize2fs
+  become: true
+  raw: resize2fs {{root_part}}
+  when: repartition.changed

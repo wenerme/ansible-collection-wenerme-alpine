@@ -1,0 +1,19 @@
+- name: check kernel mitigations off
+  become: true
+  lineinfile:
+    path: /etc/update-extlinux.conf
+    backrefs: yes
+    regexp: '^default_kernel_opts="[^"]*mitigations=off[^"]*"'
+    state: absent
+  check_mode: yes
+  register: lineinfile
+  changed_when: false
+
+- name: kernel mitigations off
+  become: true
+  lineinfile:
+    path: /etc/update-extlinux.conf
+    backrefs: yes
+    regexp: '^default_kernel_opts="([^"]*)"'
+    line: 'default_kernel_opts="\1 mitigations=off"'
+  when: not lineinfile.found

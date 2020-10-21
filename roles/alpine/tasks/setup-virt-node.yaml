@@ -1,0 +1,28 @@
+# agent need /dev/virtio-ports
+- name: qemu agent need udev
+  include_tasks: ensure-service.yaml
+  vars:
+    service_name: udev
+
+- name: install virt packages
+  apk:
+    name: "{{item}}"
+  loop:
+  - qemu-guest-agent
+
+- name: trigger udev
+  shell: udevadm trigger
+  changed_when: false
+
+- name: start qemu guest agent
+  service:
+    name: qemu-guest-agent
+    state: started
+    enabled: true
+
+# libvirt send reboot and shutdown as acpi
+- name: start acpid
+  service:
+    name: acpid
+    state: started
+    enabled: true

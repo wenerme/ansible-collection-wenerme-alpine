@@ -1,0 +1,24 @@
+- name: get {{domain}} ip
+  shell: dig +short {{domain}} {{'@'+nameserver if nameserver is defined else ''}} | head -1
+  register: shell_out
+
+# py3-netifaces
+
+- name: ping {{domain}} with {{shell_out.stdout}}
+  icmp_ping:
+    dest: "{{shell_out.stdout}}"
+    count: 3
+  register: icmp_ping_out
+
+- name: summary
+  debug:
+    msg: >-
+      ping
+      {{domain}}
+      {{shell_out.stdout}}
+      min {{icmp_ping_out.rtt.min}} avg {{icmp_ping_out.rtt.avg}} max {{icmp_ping_out.rtt.max}}
+
+# with_dnsmasq_server_file
+# with_dnsmasq_address_file
+# with_hosts_file
+# with_ip_route

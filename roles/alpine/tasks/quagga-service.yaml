@@ -1,0 +1,44 @@
+- name: quagga install
+  become: true
+  apk:
+    name: "{{item}}"
+  loop:
+  - quagga
+
+- name: add admin to quagga group
+  become: true
+  user:
+    name: admin
+    groups: quagga
+    append: yes
+
+- name: quagga sysctl conf
+  become: true
+  sysctl:
+    name: "{{item.name}}"
+    value: "{{item.value}}"
+    state: present
+  loop:
+    - {name: net.ipv4.ip_forward, value: 1}
+
+- name: quagga log dir
+  become: true
+  file:
+    path: /var/log/quagga
+    state: directory
+    owner: quagga
+
+- name: sync configs
+  include_tasks: quagga-conf-sync.yaml
+
+- name: daemons service
+  include_tasks: quagga-daemon-service.yaml
+  vars:
+    quagga_daemon: "{{item}}"
+  loop:
+  - zebra
+  - ripd
+  - ripngd
+  - ospfd
+  - ospf6d
+  - bgpd

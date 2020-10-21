@@ -1,0 +1,16 @@
+- name: privoxy | install
+  become: true
+  package:
+    name: "{{item}}"
+    state: present
+  loop:
+  - privoxy
+
+- import_tasks: privoxy-conf.yaml
+
+- name: privoxy | start
+  become: true
+  service:
+    name: privoxy
+    state: started
+    enabled: true

@@ -1,0 +1,18 @@
+- include_tasks: alpine-preset.yaml
+
+- name: add pubkey
+  become: true
+  get_url:
+    url: http://repo.wener.me/alpine/wenermail@gmail.com-5dc8c7cd.rsa.pub
+    dest: /etc/apk/keys/wenermail@gmail.com-5dc8c7cd.rsa.pub
+    mode: '0644'
+    checksum: sha256:8719a701279508df40dbd5c72d00e645f68ad83e15aa04d4b9760991760a4823
+
+- name: add repo
+  become: true
+  lineinfile:
+    path: /etc/apk/repositories
+    line: https://repo.wener.me/alpine/v{{alpine_major_version}}/{{item}}
+  loop:
+  - main
+  - community

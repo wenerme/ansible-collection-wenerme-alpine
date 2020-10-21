@@ -1,0 +1,10 @@
+- import_tasks: docker-install.yaml
+
+- import_tasks: docker-conf.yaml
+
+- name: start docker on bootstrap
+  become: true
+  service:
+    name: docker
+    state: started
+    enabled: yes

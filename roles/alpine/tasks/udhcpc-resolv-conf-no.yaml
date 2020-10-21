@@ -1,0 +1,13 @@
+- name: udhcpc conf dir
+  become: true
+  file:
+    path: /etc/udhcpc
+    state: directory
+
+- name: disable RESOLV_CONF
+  become: true
+  lineinfile:
+    path: /etc/udhcpc/udhcpc.conf
+    line: RESOLV_CONF=no
+    create: true
+    regex: '^\s*RESOLV_CONF'

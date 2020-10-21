@@ -1,0 +1,10 @@
+- import_tasks: crond-service.yaml
+
+- name: zfs | weekly zfs-scrub-{{zfs_pool}}
+  become: true
+  copy:
+    dest: /etc/periodic/weekly/zfs-scrub-{{zfs_pool}}
+    content: |
+      #!/bin/sh
+      zpool scrub {{zfs_pool}}
+    mode: +x

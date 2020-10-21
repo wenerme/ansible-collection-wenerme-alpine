@@ -1,0 +1,25 @@
+- name: consul install
+  become: true
+  apk:
+    name: "{{item}}"
+  loop:
+    - consul
+
+- name: sync consul conf
+  include_tasks: consul-conf-sync.yaml
+  vars:
+    service_name: consul
+    service_conf_dest_path: /etc/consul
+    service_conf_delete: true
+
+- name: start consul service
+  become: true
+  service:
+    name: consul
+    state: started
+
+- name: enable consul service
+  become: true
+  service:
+    name: consul
+    enabled: true

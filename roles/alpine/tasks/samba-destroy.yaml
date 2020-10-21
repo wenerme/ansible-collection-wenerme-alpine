@@ -1,0 +1,6 @@
+- name: samba | stop
+  become: true
+  service:
+    name: samba
+    state: stopped
+    enabled: false

@@ -1,0 +1,4 @@
+- name: install
+  become: true
+  apk:
+    name: containerd

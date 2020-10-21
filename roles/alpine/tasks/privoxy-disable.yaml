@@ -1,0 +1,6 @@
+- name: privoxy | disable
+  become: true
+  service:
+    name: privoxy
+    state: stopped
+    enabled: false

@@ -1,0 +1,179 @@
+# wireless_ap_interface = wlan0
+# wireless_ap_address = 192.168.1.1/24
+# wireless_ap_gateway = 192.168.0.1
+
+# upstream - next hop
+# NOTE change to upstream need manully remove lines in /etc/network/interfaces
+# wireless_ap_upstream_gateway = 192.168.0.1 - ansible_default_ipv4.interface
+# wireless_ap_upstream_interface = eth0 - ansible_default_ipv4.gateway
+
+- name: install packages
+  become: true
+  apk:
+    name: "{{item}}"
+  loop:
+  - hostapd
+  - dnsmasq{{dnsmasq_dnssec is defined|ternary('-dnssec','')}}
+  - iproute2
+  - iptables
+
+- name: wifi facts preset
+  set_fact:
+    wireless_ap_interface: "{{wireless_ap_interface|default('wlan0')}}"
+    wireless_ap_gateway: "{{wireless_ap_gateway|default(wireless_ap_address|ipaddr('address'))}}"
+    # default to hostname-ap
+    wireless_ap_ssid: "{{wireless_ap_ssid|default((ansible_hostname|default(inventory_hostname))+'-ap')}}"
+    wireless_ap_upstream_interface: "{{wireless_ap_upstream_interface|default(ansible_default_ipv4.interface)}}"
+    wireless_ap_upstream_gateway: "{{wireless_ap_upstream_gateway|default(ansible_default_ipv4.gateway)}}"
+
+# wifi interface
+# -------------------
+- name: wifi interface force ifdown
+  become: true
+  shell: ifdown -f {{wireless_ap_interface}} || true
+
+- name: wifi interface hook reset
+  become: true
+  interfaces_file:
+    dest: /etc/network/interfaces
+    iface: "{{wireless_ap_interface}}"
+    option: "{{item}}"
+    state: absent
+  loop:
+  - post-up
+  - down
+
+
+- name: wifi inet static
+  become: true
+  lineinfile:
+    path: /etc/network/interfaces
+    line: iface {{wireless_ap_interface}} inet static
+    regex: '^\s*iface\s+{{wireless_ap_interface}}'
+    state: present
+
+- name: wifi auto
+  become: true
+  lineinfile:
+    path: /etc/network/interfaces
+    line: auto {{wireless_ap_interface}}
+    insertbefore: '^iface {{wireless_ap_interface}}'
+    state: present
+
+- name: wifi interface
+  become: true
+  interfaces_file:
+    dest: /etc/network/interfaces
+    iface: "{{wireless_ap_interface}}"
+    option: "{{item.name}}"
+    value: "{{item.value}}"
+  loop:
+  - {name: address, value: "{{wireless_ap_address|ipaddr('address')}}"}
+  - {name: netmask, value: "{{wireless_ap_address|ipaddr('netmask')}}"}
+  # enable forward
+  - {name: post-up, value: "iptables -I FORWARD -i {{wireless_ap_interface}} -j ACCEPT"}
+  - {name: down, value: "iptables -D FORWARD -i {{wireless_ap_interface}} -j ACCEPT || true"}
+  # upstream - forward
+  - {name: post-up, value: "iptables -I FORWARD -i {{wireless_ap_upstream_interface}} -j ACCEPT"}
+  - {name: down, value: "iptables -D FORWARD -i {{wireless_ap_upstream_interface}} -j ACCEPT || true"}
+  # upstream - nat
+  - {name: post-up, value: "iptables -t nat -A POSTROUTING -s {{wireless_ap_address|ipaddr('network/prefix')}} -o {{wireless_ap_upstream_interface}} -j MASQUERADE"}
+  - {name: down, value: "iptables -t nat -D POSTROUTING -s {{wireless_ap_address|ipaddr('network/prefix')}} -o {{wireless_ap_upstream_interface}} -j MASQUERADE || true"}
+
+- name: sysctl ip_forward conf
+  become: true
+  sysctl:
+    name: "{{item.name}}"
+    value: "{{item.value}}"
+    state: present
+  loop:
+    - {name: net.ipv4.ip_forward, value: 1}
+
+# isolate wifi access
+# -------------------
+- name: add rt_tables wifi
+  become: true
+  lineinfile:
+    path: /etc/iproute2/rt_tables
+    # TODO params
+    line: "90 wifi"
+    regex: "^[^#]*wifi"
+
+- name: wifi isolate route
+  become: true
+  interfaces_file:
+    dest: /etc/network/interfaces
+    iface: "{{wireless_ap_interface}}"
+    option: "{{item.name}}"
+    value: "{{item.value}}"
+  loop:
+  - {name: post-up, value: "ip rule add from {{wireless_ap_address|ipaddr('network/prefix')}} table wifi"}
+  - {name: post-up, value: "ip route add {{wireless_ap_address|ipaddr('network/prefix')}} via {{wireless_ap_address|ipaddr('address')}} table wifi"}
+  - {name: post-up, value: "ip route add default via {{wireless_ap_upstream_gateway}} table wifi"}
+  # teardown
+  - {name: down, value: "ip rule del from {{wireless_ap_address|ipaddr('network/prefix')}} table wifi || true"}
+  - {name: down, value: "ip route flush table wifi || true"}
+
+# wifi interface restart
+# -------------------
+- name: wifi interface ifup
+  become: true
+  shell: ifup {{wireless_ap_interface}}
+
+# dnsmasq
+# -------------------
+- name: dnsmasq conf
+  become: true
+  copy:
+    dest: /etc/dnsmasq.d/wifi-ap.conf
+    # dhcp range from x.100-x.255
+    # use interface address as gateway
+    # use 8.8.8.8 as dns
+    content: |
+      # dhcp
+      dhcp-range={{wireless_ap_address|ipaddr('100')|ipaddr('address')}},{{wireless_ap_address|ipaddr('255')|ipaddr('address')}},{{wireless_ap_address|ipaddr('netmask')}},12h
+      dhcp-option=6,{{wireless_ap_address|ipaddr('address')}}
+      # dns
+      no-resolv
+      log-queries
+      server=8.8.8.8
+      {{wireless_ap_dnsmasq_conf_extra|default('')}}
+
+- name: start dnsmasq
+  become: true
+  service:
+    name: dnsmasq
+    state: restarted
+    enabled: true
+
+# hostapd
+# -------------------
+- name: hostapd conf
+  become: true
+  copy:
+    dest: /etc/hostapd/hostapd.conf
+    content: |
+      interface={{wireless_ap_interface}}
+      driver=nl80211
+      hw_mode=g
+      channel=6
+      ieee80211d=1
+      country_code=CN
+      ieee80211n=1
+      ieee80211ac=1
+      wmm_enabled=1
+
+      ssid={{wireless_ap_ssid}}
+      auth_algs=1
+      wpa=2
+      wpa_key_mgmt=WPA-PSK
+      rsn_pairwise=CCMP
+      wpa_passphrase={{wireless_ap_password}}
+      {{wireless_ap_hostapd_conf_extra|default('')}}
+
+- name: start hostapd
+  become: true
+  service:
+    name: hostapd
+    state: restarted
+    enabled: true

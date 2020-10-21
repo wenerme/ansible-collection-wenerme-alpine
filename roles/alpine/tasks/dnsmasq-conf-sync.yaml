@@ -1,0 +1,60 @@
+# include /etc/dnsmasq.d
+- name: dnsmasq include dnsmasq.d
+  become: true
+  lineinfile:
+    path: /etc/dnsmasq.conf
+    line: conf-dir=/etc/dnsmasq.d
+    create: true
+    regex: '^\s*conf-dir='
+  when: dnsmasq_include_dir is undefined or dnsmasq_include_dir
+  notify: dnsmasq-reload
+
+- name: write inline resolv.dnsmasq.conf
+  become: true
+  copy:
+      dest: /etc/resolv.dnsmasq.conf
+      content: |
+        {{dnsmasq_resolv_conf}}
+  when: dnsmasq_resolv_conf is defined
+  notify: dnsmasq-reload
+
+- name: conf-dir resolv.dnsmasq.conf
+  become: true
+  lineinfile:
+    path: /etc/dnsmasq.d/resolv.conf
+    line: resolv-file=/etc/resolv.dnsmasq.conf
+    create: true
+    regex: '^\s*resolv-file='
+  when: dnsmasq_include_dir is undefined or dnsmasq_include_dir
+  notify: dnsmasq-reload
+
+- name: dnsmasq conf sync
+  include_role:
+    name: alpine
+    tasks_from: service-conf-sync
+  vars:
+    service_name: dnsmasq
+    service_conf_dest_path: /etc/dnsmasq.conf
+    service_conf_file: dnsmasq.conf
+    service_notify_type: restart
+
+- name: resolv dnsmasq conf sync
+  include_role:
+    name: alpine
+    tasks_from: service-conf-sync
+  vars:
+    service_name: dnsmasq
+    service_conf_dest_path: /etc/resolv.dnsmasq.conf
+    service_conf_file: resolv.conf
+    service_notify_type: restart
+
+- name: dnsmasq.d conf sync
+  include_role:
+    name: alpine
+    tasks_from: service-conf-sync
+  vars:
+    service_name: dnsmasq
+    service_conf_dest_path: /etc/dnsmasq.d
+    service_conf_file: dnsmasq.d
+    service_conf_delete: true
+    service_notify_type: restart

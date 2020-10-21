@@ -1,0 +1,6 @@
+- name: prometheus node-exporter | stop
+  become: true
+  service:
+    name: node-exporter
+    state: stopped
+    enabled: false

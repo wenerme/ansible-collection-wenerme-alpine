@@ -1,0 +1,7 @@
+- name: haproxy | inline haproxy.cfg
+  become: true
+  copy:
+    dest: /etc/haproxy/haproxy.cfg
+    content: "{{haproxy_conf_inline}}"
+  when: haproxy_conf_inline is defined
+  notify: haproxy-reload

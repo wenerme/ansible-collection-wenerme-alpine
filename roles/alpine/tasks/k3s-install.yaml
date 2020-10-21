@@ -1,0 +1,28 @@
+- name: k3s | install deps
+  become: true
+  package:
+    name: "{{item}}"
+    state: present
+  loop:
+  - conntrack-tools
+  - containerd
+  - coreutils
+  - dbus
+  - findutils
+  - ipset
+  - iptables
+  - musl
+
+- name: k3s | install cni-plugins
+  become: true
+  apk:
+    repository: https://mirrors.aliyun.com/alpine/edge/community/
+    name: cni-plugins
+
+- name: k3s | install k3s
+  become: true
+  apk:
+    # repository: https://mirrors.aliyun.com/alpine/edge/testing/
+    # 同步更快
+    repository: https://mirrors.tuna.tsinghua.edu.cn/alpine/edge/testing/
+    name: k3s

@@ -1,0 +1,23 @@
+
+# Error response from daemon: linux mounts: path /var/lib/rancher is mounted on / but it is not a shared mount
+# findmnt -o TARGET,PROPAGATION /
+- name: shared root
+  become: true
+  shell: mount --make-rshared /
+  changed_when: no
+
+- name: enable local service
+  become: true
+  service:
+    name: local
+    state: started
+    enabled: true
+
+- name: enable mount shared root
+  become: true
+  copy:
+    dest: /etc/local.d/00-mount-shared-root.start
+    content: |
+      #!/bin/sh
+      mount --make-rshared /
+    mode: +x

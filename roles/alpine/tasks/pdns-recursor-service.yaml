@@ -1,0 +1,21 @@
+- name: install pdns-recursor packages
+  become: true
+  apk:
+    name: "{{item}}"
+  loop:
+  - pdns-recursor
+  - pdns-recursor-openrc
+
+- include_tasks: pdns-recursor-conf-sync.yaml
+
+- name: start pdns-recursor service
+  become: true
+  service:
+    name: pdns-recursor
+    state: started
+
+- name: enable pdns-recursor service
+  become: true
+  service:
+    name: pdns-recursor
+    enabled: true

@@ -1,0 +1,13 @@
+- name: docker | mkdir /etc/docker
+  become: true
+  file:
+    path: /etc/docker
+    state: directory
+
+- name: docker | mirror {{docker_mirror | default('N/A')}}
+  become: true
+  copy:
+      dest: /etc/docker/daemon.json
+      # fixme should not override whole json
+      content: '{ "registry-mirrors": ["{{docker_mirror}}"] }'
+  notify: docker-reload

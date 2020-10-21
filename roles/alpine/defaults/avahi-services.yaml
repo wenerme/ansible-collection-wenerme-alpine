@@ -1,0 +1,26 @@
+sftp-ssh: |
+  <service-group>
+    <name replace-wildcards="yes">%h</name>
+    <service>
+      <type>_sftp-ssh._tcp</type>
+      <port>22</port>
+    </service>
+  </service-group>
+
+ssh: |
+  <service-group>
+    <name replace-wildcards="yes">%h</name>
+    <service>
+      <type>_ssh._tcp</type>
+      <port>22</port>
+    </service>
+  </service-group>
+
+smb: |
+  <service-group>
+    <name replace-wildcards="yes">%h</name>
+    <service>
+      <type>_smb._tcp</type>
+      <port>445</port>
+    </service>
+  </service-group>

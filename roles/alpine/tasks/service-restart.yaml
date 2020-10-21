@@ -1,0 +1,5 @@
+- name: "{{service}} | restart"
+  become: true
+  service:
+    name: "{{service}}"
+    state: restarted

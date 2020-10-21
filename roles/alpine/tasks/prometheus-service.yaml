@@ -1,0 +1,8 @@
+- import_tasks: prometheus-conf.yaml
+
+- name: prometheus | service
+  become: true
+  service:
+    name: prometheus
+    state: started
+    enabled: true

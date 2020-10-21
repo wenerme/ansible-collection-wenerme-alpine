@@ -1,0 +1,6 @@
+- name: tinyproxy | disable
+  become: true
+  service:
+    name: tinyproxy
+    state: stopped
+    enabled: false

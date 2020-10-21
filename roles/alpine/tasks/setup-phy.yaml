@@ -1,0 +1,22 @@
+
+- name: install package for phy node
+  become: true
+  apk:
+    name: '{{item}}'
+  loop:
+    # system
+    - util-linux
+    - procps
+    # networking
+    - iproute2
+    - bonding
+    - ethtool
+    # storage
+    - e2fsprogs-extra
+    # debug
+    - bind-tools
+    - tcpdump
+    - dmidecode
+    # - lm-sernsor
+    # - lm-sensors-sensord
+    # - lm-sensors-detect

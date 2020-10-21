@@ -1,0 +1,34 @@
+- name: monit local conf
+  become: true
+  copy:
+    dest: /etc/monitrc
+    mode: "0700"
+    src: files/monitrc
+  when: "'files/monitrc' is file"
+  notify: monit-reload
+
+- name: monit default conf
+  become: true
+  copy:
+    dest: /etc/monitrc
+    mode: "0700"
+    content: |
+      set daemon  30
+      set log syslog
+      set log /var/log/monit.log
+
+      include /etc/monit.d/*
+
+      # default httpd
+      set httpd port 2812 and
+      use address localhost
+      allow localhost
+      allow admin:monit
+  when: "'files/monitrc' is not file"
+  notify: monit-reload
+
+- name: ensure /etc/monit.d/
+  become: true
+  file:
+    path: /etc/monit.d/
+    state: directory

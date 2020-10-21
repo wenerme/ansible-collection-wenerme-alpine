@@ -1,0 +1,7 @@
+# [ -f /etc/machine-id ] || ( uuidgen | sudo tee -a /etc/machine-id )
+
+- name: rm /etc/machine-id
+  become: true
+  file:
+    path: /etc/machine-id
+    state: absent

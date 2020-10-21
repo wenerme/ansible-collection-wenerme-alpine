@@ -1,0 +1,8 @@
+- name: install packages
+  become: true
+  apk:
+    name: "{{item}}"
+  loop:
+  - hostapd
+
+# TODO

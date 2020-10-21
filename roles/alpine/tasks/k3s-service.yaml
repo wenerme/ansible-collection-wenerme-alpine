@@ -1,0 +1,41 @@
+- import_tasks: k3s-install.yaml
+- import_tasks: k3s-conf.yaml
+
+- include_tasks: docker-service.yaml
+  when: '"--docker" in k3s_env["K3S_OPTS"]'
+# - import_tasks: dbus-service.yaml
+
+- name: k3s | docker
+  become: true
+  service:
+    name: docker
+    state: started
+    enabled: true
+  when: '"--docker" in k3s_env["K3S_OPTS"]'
+
+- name: k3s | server
+  become: true
+  service:
+    name: k3s
+    state: started
+    enabled: true
+  when: k3s_role == "server"
+
+- name: k3s | wait server {{k3s_server_url}}
+  uri:
+    url: "{{k3s_server_url}}/ping"
+    validate_certs: false
+    return_content: yes
+  register: result
+  # until: result.msg == "pong"
+  until: result.status == 200
+  retries: 60
+  delay: 5
+
+- name: k3s | agent
+  become: true
+  service:
+    name: k3s
+    state: started
+    enabled: true
+  when: k3s_role != "server"

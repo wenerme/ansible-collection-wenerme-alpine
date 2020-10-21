@@ -1,0 +1,15 @@
+- name: stop services
+  become: true
+  service:
+    name: libvirtd
+    state: stopped
+    enabled: false
+
+- name: remove modules-load conf
+  become: true
+  file:
+    path: /etc/modules-load.d/kvm.conf
+    state: absent
+
+# will not unload modules and uninstall deps
+# should delete virbr0 ? - ip li del virbr0

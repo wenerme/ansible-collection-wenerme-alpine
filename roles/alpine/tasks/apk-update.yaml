@@ -1,0 +1,5 @@
+- name: apk update
+  become: true
+  apk:
+    update_cache: yes
+  changed_when: no

@@ -1,0 +1,17 @@
+- include_tasks: tinc-preset.yaml
+
+- set_fact:
+    tinc_local_host_dir: "{{tinc_local_host_dir|default('files/'+tinc_netname+'-hosts')}}"
+
+- name: make local dir {{tinc_local_host_dir}}
+  delegate_to: localhost
+  file:
+    path: "{{tinc_local_host_dir}}/{{tinc_name}}"
+    state: directory
+
+- name: collect {{tinc_name}} host conf to local
+  become: true
+  synchronize:
+    src: "{{tinc_conf_dir}}/"
+    dest: "{{tinc_local_host_dir}}/{{tinc_name}}/"
+    mode: pull

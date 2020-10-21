@@ -1,0 +1,5 @@
+- name: node-exporter | remove mdns
+  become: true
+  file:
+    path: /etc/avahi/services/node-exporter.service
+    state: absent

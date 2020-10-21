@@ -1,0 +1,150 @@
+# 注意
+# * 不支持 reload 则使用 shell: service privoxy --ifstarted restart 避免服务启动
+
+- name: sshd-restart
+  become: true
+  service: name=sshd state=restarted
+- name: sshd-reload
+  become: true
+  service: name=sshd state=reloaded
+
+- name: nginx-reload
+  become: true
+  service: name=nginx state=reloaded
+
+- name: pdns-restart
+  become: true
+  service: name=pdns state=restarted
+- name: pdns-reload
+  become: true
+  service: name=pdns state=restarted
+- name: pdns-recursor-restart
+  become: true
+  service: name=pdns-recursor state=restarted
+- name: pdns-recursor-reload
+  become: true
+  service: name=pdns-recursor state=restarted
+
+
+- name: dnsmasq-restart
+  become: true
+  service: name=dnsmasq state=restarted
+- name: dnsmasq-reload
+  become: true
+  service: name=dnsmasq state=reloaded
+
+- name: docker-restart
+  become: true
+  service: name=docker state=restarted
+- name: docker-reload
+  become: true
+  service: name=docker state=reloaded
+
+- name: libvirtd-restart
+  become: true
+  service: name=libvirtd state=restarted
+
+- name: libvirtd-reload
+  become: true
+  service: name=libvirtd state=reloaded
+
+- name: openldap-restart
+  become: true
+  service: name=slapd state=restarted
+
+- name: tinc-restart
+  become: true
+  # service: name=tincd state=restarted
+  # shell: |
+  #   [ -f /etc/init.d/tincd.{{tinc_netname}} ] &&
+  #   service tincd.{{tinc_netname}} ||
+  #   { tinc pid && tinc restart || tinc start; }
+  shell: service tincd.{{tinc_netname}} --ifstarted restart
+  environment:
+    NETNAME: "{{tinc_netname}}"
+- name: tinc-reload
+  become: true
+  # service: name=tincd state=reloaded
+  # shell: tinc -n {{tinc_netname}} reload
+  shell: service tincd.{{tinc_netname}} --ifstarted restart
+
+# not working
+# - name: tinc-restart-{{tinc_netname}}
+#   become: true
+#   shell: tinc -n {{tinc_netname}} restart
+# - name: tinc-reload
+#   become: true
+#   shell: tinc -n {{tinc_netname}} reload
+
+- name: traefik-restart
+  become: true
+  service: name=traefik state=restarted
+
+- name: consul-restart
+  become: true
+  service: name=consul state=restarted
+- name: consul-reload
+  become: true
+  service: name=consul state=reloaded
+
+- name: consul-template-restart
+  become: true
+  service: name=consul-template state=restarted
+
+# quagga
+- name: quagga-zebra-restart
+  become: true
+  listen: quagga-zebra-reload
+  service: name=zebra state=restarted
+- name: quagga-ripd-restart
+  become: true
+  listen: quagga-ripd-reload
+  service: name=ripd state=restarted
+- name: quagga-ripngd-restart
+  become: true
+  listen: quagga-ripngd-reload
+  service: name=ripngd state=restarted
+- name: quagga-ospfd-restart
+  become: true
+  listen: quagga-ospfd-reload
+  service: name=ospfd state=restarted
+- name: quagga-ospf6d-restart
+  become: true
+  listen: quagga-ospf6d-reload
+  service: name=ospf6d state=restarted
+- name: quagga-bgpd-restart
+  become: true
+  listen: quagga-bgpd-reload
+  service: name=bgpd state=restarted
+
+
+- name: monit-reload
+  become: true
+  service: name=monit state=reloaded
+
+- name: prometheus-reload
+  become: true
+  service: name=prometheus state=reloaded
+
+- name: samba-reload
+  become: true
+  service: name=samba state=reloaded
+
+- name: haproxy-reload
+  become: true
+  service: name=haproxy state=reloaded
+
+- name: sockd-reload
+  become: true
+  shell: service sockd --ifstarted restart
+
+- name: privoxy-reload
+  become: true
+  shell: service privoxy --ifstarted restart
+- name: tinyproxy-reload
+  become: true
+  shell: service tinyproxy --ifstarted restart
+
+- name: k3s-restart
+  become: true
+  shell: service k3s --ifstarted restart

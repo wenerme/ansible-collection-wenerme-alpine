@@ -1,0 +1,4 @@
+- import_tasks: tinc-install.yaml
+- import_tasks: tinc-conf.yaml
+
+- import_tasks: tinc-supervise-start.yaml

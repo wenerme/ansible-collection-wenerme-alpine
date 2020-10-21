@@ -1,0 +1,12 @@
+# Disable current service
+- import_tasks: tincd-service-disable.yaml
+
+# Uninstall cutomized supervisor
+- import_tasks: tinc-supervise-uninstall.yaml
+
+# Remove tinc conf
+- name: remove tinc host conf
+  become: true
+  file:
+    path: "{{tinc_conf_dir}}"
+    state: absent

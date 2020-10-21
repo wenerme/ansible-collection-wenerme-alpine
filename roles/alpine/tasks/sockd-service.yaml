@@ -1,0 +1,21 @@
+- name: sockd | install
+  become: true
+  apk:
+    name: "{{item}}"
+  loop:
+  - dante-server
+
+- name: sockd | inline sockd.conf
+  become: true
+  copy:
+    dest: /etc/sockd.conf
+    content: "{{sockd_conf_inline}}"
+  when: sockd_conf_inline is defined
+  notify: sockd-reload
+
+- name: sockd | start
+  become: true
+  service:
+    name: sockd
+    state: started
+    enabled: true

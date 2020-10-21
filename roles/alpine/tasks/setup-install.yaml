@@ -1,0 +1,18 @@
+# https://github.com/alpinelinux/alpine-conf/blob/master/setup-apkrepos.in
+# https://mirrors.alpinelinux.org/mirrors.txt
+- name: setup apkrepo
+  raw: "egrep '/v[.0-9]+/main' /etc/apk/repositories > /dev/null && echo -n 0 || echo {{alpine_mirror}}/v{{alpine_version}}/{{item}} >> /etc/apk/repositories"
+  loop:
+  - main
+  - community
+  when: alpine_mirror is defined
+  register: raw_out
+  changed_when: raw_out.stdout != '0'
+
+- name: setup service
+  raw: "rc-update add networking && rc-update add sshd"
+
+# TODO not good enough
+# ROOTFS=btrfs BOOTFS=btrfs VARFS=btrfs DISKLABEL=alp-wen setup-disk -m sys -s 0 -v /dev/sda
+- name: setup disk
+  raw: ERASE_DISKS=/dev/sda MKFS_OPTS_BOOT="-F" MKFS_OPTS_VAR="-F" setup-disk -m sys -s 0 -v /dev/sda

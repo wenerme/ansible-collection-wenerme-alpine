@@ -1,0 +1,6 @@
+- name: Reboot now...
+  pause:
+    seconds: "15"
+- name: rebooting
+  become: true
+  raw: reboot

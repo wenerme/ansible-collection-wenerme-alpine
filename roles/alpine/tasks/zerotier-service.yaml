@@ -1,0 +1,60 @@
+- name: ZeroTier | choose netname
+  set_fact:
+    zerotier_network_id: >-
+      {{
+        lookup('vars', 'zerotier_network_'+zerotier_network+'_id')
+        | default(lookup('vars', 'zerotier_network_id', default=''))
+      }}
+    zerotier_network_name: >-
+      {{
+        lookup('vars', 'zerotier_network_'+zerotier_network+'_name')
+        | default(lookup('vars', 'zerotier_network_name',default=zerotier_network))
+      }}
+
+  when: zerotier_network is defined
+
+- name: ZeroTier | load modules
+  become: true
+  modprobe:
+    name: "{{item}}"
+    state: present
+  loop: &modules
+  - tun
+
+- name: ZeroTier | persist mpdules
+  become: true
+  lineinfile:
+    path: /etc/modules-load.d/zerotier.conf
+    line: "{{item}}"
+    create: true
+  loop: *modules
+
+- name: ZeroTier | install
+  become: true
+  package:
+    name: zerotier-one
+    state: present
+
+- name: ZeroTier | devicemap
+  become: true
+  lineinfile:
+    create: true
+    path: /var/lib/zerotier-one/devicemap
+    line: '{{zerotier_network_id}}={{zerotier_network_name}}'
+    regex: '^{{zerotier_network_id}}'
+    state: present
+  when:
+  - zerotier_network_id is defined
+  - zerotier_network_name is defined
+
+- name: ZeroTier | start
+  become: true
+  service:
+    name: zerotier-one
+    enabled: true
+    state: started
+
+- name: ZeroTier | join {{zerotier_network_name|default(zerotier_network_id)}}
+  become: true
+  command: zerotier-cli join {{zerotier_network_id}}
+  when: zerotier_network_id is defined

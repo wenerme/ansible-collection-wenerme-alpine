@@ -1,0 +1,8 @@
+- import_tasks: prometheus-node-exporter-conf.yaml
+
+- name: prometheus node-exporter | service
+  become: true
+  service:
+    name: node-exporter
+    state: started
+    enabled: true

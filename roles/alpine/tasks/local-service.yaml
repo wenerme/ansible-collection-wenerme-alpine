@@ -1,0 +1,7 @@
+- name: enable local server
+  become: true
+  service:
+    name: local
+    enabled: yes
+  tags:
+  - service-enable

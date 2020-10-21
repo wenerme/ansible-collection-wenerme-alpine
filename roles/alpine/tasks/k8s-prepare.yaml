@@ -1,0 +1,112 @@
+# OS Requirement
+# https://rancher.com/docs/rke/latest/en/os/
+# 硬件要求
+# https://docs.okd.io/latest/install/prerequisites.html
+# https://rancher.com/docs/rancher/v2.x/en/installation/requirements/
+# 集群限制
+# https://docs.okd.io/latest/scaling_performance/cluster_limits.html
+#
+# Master 最低 4-16-40
+#   1 CPU core and 1.5 GB of memory for each 1000 pods
+# Nodes 最低 1-8-15
+# Etcd 20G 硬盘
+
+
+- name: ensure docker
+  include_tasks: ensure-service.yaml
+  vars:
+    service_name: docker
+
+- name: load modules
+  become: true
+  modprobe:
+    name: "{{item}}"
+    state: present
+  loop: &modules
+    - br_netfilter
+    - ip6_udp_tunnel
+    - ip_set
+    - ip_set_hash_ip
+    - ip_set_hash_net
+    - iptable_filter
+    - iptable_nat
+    - iptable_mangle
+    - iptable_raw
+    - nf_conntrack_netlink
+    - nf_conntrack
+    # not found alpine 3.10 virt 4.18
+    # - nf_conntrack_ipv4
+    - nf_defrag_ipv4
+    - nf_nat
+    - nf_nat_ipv4
+    # - nf_nat_masquerade_ipv4
+    - nfnetlink
+    - udp_tunnel
+    - veth
+    - vxlan
+    - x_tables
+    - xt_addrtype
+    - xt_conntrack
+    - xt_comment
+    - xt_mark
+    - xt_multiport
+    - xt_nat
+    - xt_recent
+    - xt_set
+    - xt_statistic
+    - xt_tcpudp
+
+- name: persist mpdules
+  become: true
+  lineinfile:
+    path: /etc/modules-load.d/k8s.conf
+    line: "{{item}}"
+    create: true
+  loop: *modules
+
+- name: sysctl conf
+  become: true
+  sysctl:
+    name: "{{item.name}}"
+    value: "{{item.value}}"
+    state: present
+  loop:
+    - {name: net.bridge.bridge-nf-call-iptables, value: 1}
+    - {name: net.ipv4.ip_forward, value: 1}
+
+# required by installer or somthing
+- name: sshd config
+  become: true
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: '{{item.name}} {{item.value}}'
+    regex: '^\s*{{item.name}}'
+    state: present
+    insertbefore: '^\s*Match\s+'
+    validate: sshd -T -C user=nobody -f %s
+  loop:
+    - { name: AllowTcpForwarding, value: 'yes' }
+  notify: sshd-restart
+
+# Error response from daemon: linux mounts: path /var/lib/rancher is mounted on / but it is not a shared mount
+# findmnt -o TARGET,PROPAGATION /
+- name: shared root
+  become: true
+  shell: mount --make-rshared /
+  changed_when: no
+
+- name: enable local service
+  become: true
+  service:
+    name: local
+    state: started
+    enabled: true
+
+- name: enable mount shared root
+  become: true
+  copy:
+    dest: /etc/local.d/00-mount-shared-root.start
+    content: |
+      #!/bin/sh
+      mount --make-rshared /
+    mode: +x

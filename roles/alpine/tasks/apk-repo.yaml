@@ -1,0 +1,12 @@
+- include_tasks: alpine-preset.yaml
+  when: alpine_version is undefined
+- name: set apk repo
+  become: true
+  copy:
+    dest: /etc/apk/repositories
+    content: |
+      {{alpine_mirror}}/v{{alpine_version}}/main
+      {{alpine_mirror}}/v{{alpine_version}}/community
+      {{apk_repositories_extra | default('')}}
+
+# TODO support extra mirror

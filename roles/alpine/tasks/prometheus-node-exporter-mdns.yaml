@@ -1,0 +1,17 @@
+- import_tasks: prometheus-node-exporter-service.yaml
+
+- import_tasks: avahi-service.yaml
+
+- name: node-exporter | install mdns
+  become: true
+  copy:
+    dest: /etc/avahi/services/node-exporter.service
+    content: |
+      <service-group>
+        <name replace-wildcards="yes">%h</name>
+        <service protocol="ipv4">
+          <type>_prometheus-http._tcp</type>
+          <port>9100</port>
+          <txt-record>path=/metrics</txt-record>
+        </service>
+      </service-group>

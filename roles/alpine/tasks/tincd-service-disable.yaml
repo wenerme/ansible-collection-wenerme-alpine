@@ -1,0 +1,36 @@
+- include_tasks: tinc-preset.yaml
+
+- name: network count
+  shell: tinc network | wc -l
+  register: tinc_network_count_result
+  changed_when: false
+
+- name: disable tinc service when no more networks
+  become: true
+  service:
+    name: tincd
+    state: stopped
+    enabled: false
+  when: tinc_network_count_result.stdout == '1'
+
+- block:
+  - name: remove tinc.networks
+    become: true
+    lineinfile:
+      path: /etc/conf.d/tinc.networks
+      regex: 'NETWORK:\s*{{tinc_netname}}'
+      state: absent
+    register: lineinfile_result
+  - name: restart tincd
+    become: true
+    service:
+      name: tincd
+      state: restarted
+    when: lineinfile_result.changed
+  when: tinc_network_count_result.stdout > '1'
+
+- name: remove tinc host conf
+  become: true
+  file:
+    path: "{{tinc_conf_dir}}"
+    state: absent

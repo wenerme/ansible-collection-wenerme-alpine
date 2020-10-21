@@ -1,0 +1,17 @@
+- name: require specify version
+  assert:
+    that:
+      - version is defined
+
+- include: alpine-preset.yaml
+
+- name: check is same version
+  meta: end_play
+  when: version == alpine_major_version
+
+- name: upgrade alpine major version to {{version}}
+  become: true
+  replace:
+    path: /etc/apk/repositories
+    regexp: /v{{alpine_major_version}}/
+    replace: /v{{version}}/

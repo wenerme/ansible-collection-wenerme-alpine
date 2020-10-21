@@ -1,0 +1,18 @@
+
+- name: pdns conf sync
+  include_role:
+    name: alpine
+    tasks_from: service-conf-sync
+  vars:
+    service_name: pdns
+    service_conf_dest_path: /etc/pdns/pdns.conf
+    service_conf_file: pdns.conf
+
+- name: pdns.j2 conf sync
+  include_role:
+    name: alpine
+    tasks_from: service-conf-sync
+  vars:
+    service_name: pdns
+    service_conf_dest_path: /etc/pdns/pdns.conf
+    service_conf_file: pdns.conf.j2

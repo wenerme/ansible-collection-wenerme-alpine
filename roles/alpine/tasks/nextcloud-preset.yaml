@@ -1,0 +1,42 @@
+# sudo -u www-data ./occ -V | egrep -o '[0-9.]+'
+
+- name: Nextcloud preset
+  block:
+    - name: setup nextcloud installed fact
+      set_fact:
+        # use remote version
+        nextcloud_version: 19.0.0
+        nextcloud_path: /var/www/html
+
+    - name: set local download path
+      set_fact:
+        nextcloud_download_path: files/nextcloud/{{nextcloud_version}}
+    - name: set apps.json path
+      set_fact:
+        nextcloud_apps_json: "{{nextcloud_download_path}}/apps.json"
+    - name: done preset
+      set_fact:
+        nextcloud_preset: true
+  when: nextcloud_preset is undefined
+
+- name: Load Nextcloud Apps
+  block:
+  - name: prepare local directory
+    delegate_to: localhost
+    file:
+      path: "{{nextcloud_download_path}}"
+      state: directory
+
+  - name: download app list
+    delegate_to: localhost
+    get_url:
+      dest: "{{nextcloud_apps_json}}"
+      url: https://apps.nextcloud.com/api/v1/platform/{{nextcloud_version}}/apps.json
+      use_proxy: yes
+    when: not (nextcloud_apps_json is file)
+
+  - set_fact:
+      nextcloud_apps: "{{lookup('file',nextcloud_apps_json)|from_json}}"
+    # delegate_to: localhost
+  #
+  when: nextcloud_apps is undefined

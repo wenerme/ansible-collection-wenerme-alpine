@@ -1,0 +1,25 @@
+# orders:
+# {{service_name}}_conf_path
+# files/{{inventory_hostname}}/{{service_name}}/{{service_conf_file}}
+# files/{{service_name}}/{{service_conf_file}}
+
+- name: service conf path preset
+  set_fact:
+    service_conf_file: "{{service_conf_file|default('')}}"
+    service_conf_path: "{{lookup('vars', service_name+'_conf_path',default='')}}"
+
+- name: service conf candicates
+  set_fact:
+    service_conf_paths:
+    - "files/{{inventory_hostname}}/{{service_name}}/{{service_conf_file}}"
+    - "files/{{working_group|default('')}}/{{service_name}}/{{service_conf_file}}"
+    - "files/{{service_name}}/{{service_conf_file}}"
+
+- name: detect local conf path of {{service_name}} service
+  set_fact:
+    service_conf_path: "{{service_conf_path if (service_conf_path|length > 0) else lookup('first_found', service_conf_paths, errors='ignore')}}"
+
+- name: found path {{service_conf_path}}
+  set_fact:
+    services: "{{services | default({}) | combine({'{{service_name}}':{'local_conf_path':'{{service_conf_path}}'}}, recursive=True)}}"
+  when: service_conf_path | length > 0

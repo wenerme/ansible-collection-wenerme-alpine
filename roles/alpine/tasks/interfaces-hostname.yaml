@@ -1,0 +1,7 @@
+- name: update hostname in /etc/network/interfaces
+  become: true
+  lineinfile:
+    path: /etc/network/interfaces
+    line: "\thostname {{hostname | default(inventory_hostname)}}"
+    regex: '^[^#]*hostname'
+    validate: "ifup -nafi %s"

@@ -1,0 +1,16 @@
+- name: tinyproxy | install
+  become: true
+  package:
+    name: "{{item}}"
+    state: present
+  loop:
+  - tinyproxy
+
+- import_tasks: tinyproxy-conf.yaml
+
+- name: tinyproxy | start
+  become: true
+  service:
+    name: tinyproxy
+    state: started
+    enabled: true

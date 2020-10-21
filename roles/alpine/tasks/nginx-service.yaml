@@ -1,0 +1,11 @@
+
+- include_tasks: nginx-install.yaml
+
+- include_tasks: nginx-conf-sync.yaml
+
+- name: enable nginx
+  become: true
+  service:
+    name: nginx
+    state: started
+    enabled: true

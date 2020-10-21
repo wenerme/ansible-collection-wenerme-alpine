@@ -1,0 +1,8 @@
+- name: nginx conf sync
+  include_role:
+    name: alpine
+    tasks_from: service-conf-sync
+  vars:
+    service_name: nginx
+    service_conf_dest_path: /etc/nginx
+    service_conf_delete: true

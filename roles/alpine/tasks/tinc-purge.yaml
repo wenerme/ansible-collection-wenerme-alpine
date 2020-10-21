@@ -1,0 +1,25 @@
+- include_tasks: tinc-preset.yaml
+
+- name: tinc purge
+  become: true
+  environment:
+    NETNAME: "{{tinc_netname}}"
+  # bash syntax
+  # shell: "tinc purge; comm -13 <(tinc dump nodes | cut -d' ' -f1) <(echo {{tinc_conf_dir}}/hosts/* | xargs -n 1 basename)"
+  shell: >-
+    set -e;
+    tinc purge;
+    tinc dump nodes | cut -d' ' -f1 > /tmp/tinc-nodes;
+    echo {{tinc_conf_dir}}/hosts/* | xargs -n 1 basename > /tmp/tinc-hosts;
+    comm -13 /tmp/tinc-nodes /tmp/tinc-hosts;
+    rm /tmp/tinc-nodes /tmp/tinc-hosts
+  register: tinc_purge_out
+  changed_when: tinc_purge_out.stdout_lines | length > 0
+
+- name: remove host keys
+  become: true
+  file:
+    path: "{{tinc_conf_dir}}/hosts/{{item}}"
+    state: absent
+  loop: "{{tinc_purge_out.stdout_lines}}"
+

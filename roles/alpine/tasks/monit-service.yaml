@@ -1,0 +1,17 @@
+- name: monit install
+  become: true
+  package:
+    name: "{{item}}"
+    state: present
+  loop:
+  - monit
+
+- include: monit-conf.yaml
+
+- name: enable monit
+  become: true
+  service:
+    name: monit
+    enabled: yes
+  tags:
+  - service-enable

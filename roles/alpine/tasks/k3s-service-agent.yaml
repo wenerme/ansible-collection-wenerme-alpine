@@ -1,0 +1,15 @@
+- name: setup k3s agent env
+  become: true
+  copy:
+    content: "{{k3s_env}}"
+    dest: /etc/rancher/k3s/k3s-agent.env
+  when: k3s_env is defined
+
+# todo when env changed restart service
+
+- name: start k3s-agent
+  become: true
+  service:
+    name: k3s-agent
+    enabled: true
+    state: started

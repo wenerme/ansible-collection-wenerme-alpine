@@ -1,0 +1,17 @@
+- name: detect quagga local conf path
+  include_tasks: service-conf-path.yaml
+  vars:
+    service_name: quagga
+
+- name: sync quagga configs
+  include_tasks: quagga-daemon-conf-sync.yaml
+  vars:
+    quagga_daemon: "{{item}}"
+  loop:
+  - zebra
+  - ripd
+  - ripngd
+  - ospfd
+  - ospf6d
+  - bgpd
+  when: service_conf_path is directory

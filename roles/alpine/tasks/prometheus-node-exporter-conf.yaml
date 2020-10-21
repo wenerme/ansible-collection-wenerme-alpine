@@ -1,0 +1,13 @@
+- name: node-exporter | install
+  become: true
+  apk:
+    repository: https://mirrors.aliyun.com/alpine/edge/community/
+    name: prometheus-node-exporter
+
+# ARGS="--web.listen-address=':9100'"
+- name: node-exporter | service inline conf
+  become: true
+  copy:
+    dest: /etc/conf.d/node-exporter
+    content: "{{node_exporter_service_conf_inline}}"
+  when: node_exporter_service_conf_inline is defined

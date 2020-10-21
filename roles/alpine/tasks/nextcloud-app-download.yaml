@@ -1,0 +1,56 @@
+- include_tasks: nextcloud-preset.yaml
+  when: nextcloud_preset is undefined
+
+# https://jmespath.org/
+- name: Nextcloud | {{nextcloud_app_name}} search
+  set_fact:
+    nextcloud_app: "{{nextcloud_apps | json_query(query)}}"
+  vars:
+    query: "[?id=='{{nextcloud_app_name}}'] | [0]"
+
+- set_fact:
+    nextcloud_app_release: "{{nextcloud_app.releases[0]}}"
+
+- set_fact:
+    nextcloud_app_download: "{{nextcloud_app_release.download}}"
+    nextcloud_app_version: "{{nextcloud_app_release.version}}"
+
+- set_fact:
+    nextcloud_app_filename: "{{nextcloud_app_name}}-{{nextcloud_app_version}}.tar.gz"
+- set_fact:
+    nextcloud_app_file: "{{nextcloud_download_path}}/{{nextcloud_app_filename}}"
+
+- name: Nextcloud | {{nextcloud_app_name}} detail
+  debug:
+    msg:
+    - "  Plugin {{nextcloud_app_name}}"
+    - " version {{nextcloud_app_version}}"
+    - "featured {{nextcloud_app.isFeatured}}"
+    - "     url {{nextcloud_app_download}}"
+
+- name: Nextcloud | {{nextcloud_app_name}} download
+  delegate_to: localhost
+  # get_url:
+  #   dest: "{{nextcloud_download_path}}/{{nextcloud_app_name}}-{{nextcloud_app_version}}.tar.gz"
+  #   url: "{{nextcloud_app_download}}"
+  #   use_proxy: yes
+  shell: >-
+    curl -sfLC- {{nextcloud_app_download}} -o {{nextcloud_app_file}}
+  when: not (nextcloud_app_file is file)
+
+# - name: send
+#   copy:
+#     src: "{{nextcloud_app_file}}"
+#     dest: "/tmp/{{nextcloud_app_filename}}"
+#   register: copy_result
+
+- name: Nextcloud | {{nextcloud_app_name}} install
+  unarchive:
+    # remote_src: true
+    # src: "/tmp/{{nextcloud_app_filename}}"
+    src: "{{nextcloud_app_file}}"
+    dest: "{{nextcloud_path}}/apps"
+    owner: www-data
+
+- include_tasks: nextcloud-app-enable.yaml
+  when: not (nextcloud_skip_enable | default(false))

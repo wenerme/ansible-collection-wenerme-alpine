@@ -1,0 +1,7 @@
+
+- name: crond | start
+  become: true
+  service:
+    name: crond
+    state: started
+    enabled: true

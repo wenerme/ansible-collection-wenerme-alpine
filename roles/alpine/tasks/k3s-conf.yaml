@@ -1,0 +1,21 @@
+- name: k3s | setup env
+  set_fact:
+    k3s_env: "{{ {'K3S_EXEC': k3s_exec,'K3S_OPTS': k3s_opts,'PATH': path } | combine(k3s_env|default({})) }}"
+  vars:
+    k3s_opts: "{{k3s_options|default('')}}"
+    k3s_exec: "{{'agent' if (k3s_role|default(''))!='server' else 'server'}}"
+    path: "/usr/libexec/cni:$PATH"
+
+# - name: debug
+#   debug:
+#     var: k3s_env
+
+- name: k3s | setup /etc/conf.d/k3s
+  become: true
+  lineinfile:
+    path: /etc/conf.d/k3s
+    line: >-
+      {{'' if item.key in ['K3S_EXEC', 'K3S_OPTS'] else 'export ' }}{{item.key}}={{item.value is number | ternary(item.value, '"'+(item.value|string)+'"')}}
+    regex: '^(#|export|\s)*{{item.key}}\s*='
+  loop: "{{k3s_env | dict2items}}"
+  notify: k3s-restart

@@ -1,0 +1,66 @@
+- name: tinc | preset
+  block:
+    - name: setup facts
+      failed_when: tinc_netname is undefined
+      set_fact:
+        # multi TINC detect tinc_$NETNAME_property
+        # the master node used to invite nodes
+        tinc_master: >-
+          {{
+          tinc_master
+          |default(lookup('vars', 'tinc_'+tinc_netname+'_master',default=''), true)
+          |default(tinc_netname, true)
+          }}
+        # name for node
+        # tinc not allowed `-' in name but it's common in hostname
+        tinc_name: >-
+          {{
+          tinc_name
+          |default(lookup('vars', 'tinc_'+tinc_netname+'_name',default=''), true)
+          |default(inventory_hostname, true)
+          |regex_replace('[-]','_')
+          }}
+        # address for node
+        tinc_address: >-
+          {{
+          tinc_address
+          |default(lookup('vars', 'tinc_'+tinc_netname+'_address',default=''))
+          }}
+        # the whole subnet - not node subnet
+        tinc_subnet: >-
+          {{
+          tinc_subnet
+          |default(lookup('vars', 'tinc_'+tinc_netname+'_subnet',default=''), true)
+          }}
+        # kv conf for /etc/tinc/$NETNAME/tinc.conf
+        tinc_conf: >-
+          {{
+          tinc_conf
+          |default(lookup('vars', 'tinc_'+tinc_netname+'_conf',default=[]))
+          }}
+        # kv for /etc/tinc/$NETNAME/hosts/$NETNAME
+        tinc_host_conf: "{{tinc_host_conf|default(lookup('vars', 'tinc_'+tinc_netname+'_host_conf',default=[]))}}"
+        # conf dir to sync
+        tinc_conf_dir: >-
+          {{
+          tinc_conf_dir
+          |default(lookup('vars', 'tinc_'+tinc_netname+'_conf_dir',default=''),'')
+          |default('/etc/tinc/'+tinc_netname, true)
+          }}
+        # custom          - do not genrate tinc-up - try sync
+        # empty           - generate empty tinc-up
+        # static-address  - generate tinc-up: ifconfig $INTERFACE {{tinc_address|ipaddr('address')}} netmask {{tinc_subnet|default(tinc_address)|ipaddr('netmask')}}
+        # bridge          - generate tinc-up: ip li set $INTERFACE {{tinc_bridge_master}}; ip li set $INTERFACE up
+        # dhcp            - TODO udhpc $INTERFACE
+        tinc_interface_mode: >-
+          {{
+          tinc_interface_mode
+          |default(lookup('vars', 'tinc_'+tinc_netname+'_interface_mode',default=''), true)
+          |default('bridge' if lookup('vars','tinc_bridge_master',default='') != '' else '', true)
+          |default('static-address', true)
+          }}
+
+        tinc_preset: true
+    - debug:
+        msg: "Tinc {{tinc_netname}} node {{tinc_name}} address {{tinc_address | default('n/a')}} mode {{tinc_interface_mode}}"
+  when: 'not (tinc_preset|default(false))'

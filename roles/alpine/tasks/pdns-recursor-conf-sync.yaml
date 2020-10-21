@@ -1,0 +1,14 @@
+
+- name: pdns recursor conf sync
+  include_tasks: service-conf-sync.yaml
+  vars:
+    service_name: pdns-recursor
+    service_conf_dest_path: /etc/pdns/recursor.conf
+    service_conf_file: recursor.conf
+
+- name: pdns recursor .j2 conf sync
+  include_tasks: service-conf-sync.yaml
+  vars:
+    service_name: pdns-recursor
+    service_conf_dest_path: /etc/pdns/recursor.conf
+    service_conf_file: recursor.conf.j2

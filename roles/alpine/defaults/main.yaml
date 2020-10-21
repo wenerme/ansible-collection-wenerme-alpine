@@ -1,0 +1,18 @@
+# alpine mirror
+# https://mirrors.ustc.edu.cn/alpine - slower
+alpine_mirror: https://mirrors.aliyun.com/alpine
+
+# docker mirror
+docker_mirror: https://docker.mirrors.ustc.edu.cn
+
+# ssh pubkey for admin account
+admin_pubkey_path: credentials/admin_rsa.pub
+
+# service status check mapping
+alpine_services:
+  zfs:
+    status_name: zfs-import
+
+#
+# pdns_recursor_conf_path: files/pdns/recursor.conf
+# pdns_conf_path: files/pdns/pdns.conf

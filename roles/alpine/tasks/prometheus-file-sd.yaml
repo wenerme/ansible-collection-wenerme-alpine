@@ -1,0 +1,6 @@
+
+- name: Prometheus | file discover
+  become: true
+  copy:
+    dest: /etc/prometheus/{{prometheus_fd_name}}.json
+    content: "{{prometheus_conf_inline}}"

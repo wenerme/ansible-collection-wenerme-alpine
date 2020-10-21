@@ -1,0 +1,83 @@
+- name: install qemu
+  become: true
+  apk:
+    name: "{{item}}"
+  loop:
+  - qemu
+  - qemu-system-x86_64
+  - qemu-img
+  - qemu-ui-curses
+  - libvirt-daemon
+  - libvirt-qemu
+  - libvirt-bash-completion
+  # virt-install need these packages
+  - py3-libvirt
+  - py3-libxml2
+  - virt-install
+  # group auth
+  - polkit
+  # ansible
+  - py3-lxml
+
+# virt-host-validate recommand vhost_net for better virtio performance
+# suggeest intel_iommu=on https://www.kernel.org/doc/Documentation/Intel-IOMMU.txt
+- name: load modules
+  become: true
+  modprobe:
+    name: "{{item}}"
+    state: present
+  loop: &modules
+  - tun
+  - kvm-intel
+  - vhost_net
+
+- name: persist mpdules
+  become: true
+  lineinfile:
+    path: /etc/modules-load.d/kvm.conf
+    line: "{{item}}"
+    create: true
+  loop: *modules
+
+- name: add admin to group
+  become: true
+  user:
+    name: admin
+    groups: "{{item}}"
+    state: present
+    append: true
+  loop:
+  - kvm
+  - qemu
+  - libvirt
+
+# allowed qemu:///session to bridge virbr0
+# session can not create network
+# /usr/lib/qemu/qemu-bridge-helper is root:qemu no need to chmod u+s
+# NOTE use of qemu:///session is discouraged
+# - name: allowed virbr0 for bridge
+#   become: true
+#   lineinfile:
+#     path: /etc/qemu/bridge.conf
+#     line: "allow virbr0"
+#     regex: '^[^#]+virbr0'
+#     state: present
+
+- import_tasks: dbus-service.yaml
+
+# some libvirtd feature need dbus
+- name: ensure dbus
+  become: true
+  service:
+    name: dbus
+    state: started
+    enabled: true
+
+- import_tasks: libvirtd-conf.yaml
+
+- name: start libvirtd
+  become: true
+  service:
+    name: libvirtd
+    state: started
+    enabled: true

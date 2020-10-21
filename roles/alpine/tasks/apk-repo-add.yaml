@@ -1,0 +1,19 @@
+- name: add mirror
+  become: true
+  lineinfile:
+    path: /etc/apk/repositories
+    line: '{{alpine_mirror}}/v{{alpine_version}}/{{item}}'
+    regex: '^[^#]*?{{alpine_mirror}}/v{{alpine_version}}/{{item}}'
+    state: present
+  loop:
+  - main
+  - community
+
+- name: add apk repo
+  become: true
+  lineinfile:
+    path: /etc/apk/repositories
+    line: '{{apk_repo}}'
+    regex: '^[^#]*?{{apk_repo}}'
+    state: present
+  when: apk_repo is defined

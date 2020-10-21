@@ -1,0 +1,8 @@
+- import_tasks: tinc-supervise-install.yaml
+
+- name: enable tincd.{{tinc_netname}} service
+  become: true
+  service:
+    name: tincd.{{tinc_netname}}
+    state: started
+    enabled: true

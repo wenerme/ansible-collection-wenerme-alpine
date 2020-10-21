@@ -1,0 +1,23 @@
+- include_tasks: nfs-install.yaml
+
+- name: nfs start
+  become: true
+  service:
+    name: "{{item}}"
+    state: started
+  loop:
+  - nfs
+  - nfsmount
+  tags:
+  - service-start
+
+- name: nfs enable
+  become: true
+  service:
+    name: "{{item}}"
+    enabled: true
+  loop:
+  - nfs
+  - nfsmount
+  tags:
+  - service-enable

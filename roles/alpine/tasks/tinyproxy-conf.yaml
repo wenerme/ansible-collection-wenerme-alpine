@@ -1,0 +1,7 @@
+- name: tinyproxy | inline /etc/tinyproxy/tinyproxy.conf
+  become: true
+  copy:
+    dest: /etc/tinyproxy/tinyproxy.conf
+    content: "{{tinyproxy_conf_inline}}"
+  when: tinyproxy_conf_inline is defined
+  notify: tinyproxy-reload

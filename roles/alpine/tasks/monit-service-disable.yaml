@@ -1,0 +1,7 @@
+- name: disable monit
+  become: true
+  service:
+    name: monit
+    state: stopped
+    enabled: false
+

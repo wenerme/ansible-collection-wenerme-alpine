@@ -1,0 +1,28 @@
+- name: check {{quagga_daemon}}.conf exists
+  stat:
+      path: /etc/quagga/{{quagga_daemon}}.conf
+  register: quagga_conf_stat
+
+- name: validate {{quagga_daemon}}.conf
+  become: true
+  shell: "{{quagga_daemon}} -C"
+  when: quagga_conf_stat.stat.exists
+  changed_when: false
+
+- name: service {{quagga_daemon}} start
+  become: true
+  service:
+    name: "{{quagga_daemon}}"
+    state: started
+  when: quagga_conf_stat.stat.exists
+  tags:
+  - service-start
+
+- name: service {{quagga_daemon}} enable
+  become: true
+  service:
+    name: "{{quagga_daemon}}"
+    enabled: true
+  when: quagga_conf_stat.stat.exists
+  tags:
+  - service-enable

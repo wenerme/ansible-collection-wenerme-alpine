@@ -1,0 +1,12 @@
+- name: haproxy | stop
+  become: true
+  service:
+    name: haproxy
+    state: stopped
+    enabled: false
+
+- name: haproxy | rm conf
+  become: true
+  file:
+    path: /etc/haproxy/haproxy.cfg
+    state: absent

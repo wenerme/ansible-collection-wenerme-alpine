@@ -1,0 +1,5 @@
+- name: remove tincd.{{tinc_netname | default('netname')}}
+  become: true
+  file:
+    dest: /etc/init.d/tincd.{{tinc_netname | default('netname')}}
+    state: absent
