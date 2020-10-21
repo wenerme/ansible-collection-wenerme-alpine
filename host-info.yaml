@@ -1,0 +1,12 @@
+- name: Hots Info
+  hosts: all
+  roles:
+  - alpine
+  gather_facts: false
+  tasks:
+  - import_role:
+      name: alpine
+      tasks_from: ensure-python
+  - import_role:
+      name: alpine
+      tasks_from: host-info

@@ -9,7 +9,7 @@ namespace: wenerme
 name: alpine
 
 # The version of the collection. Must be compatible with semantic versioning
-version: 1.0.1
+version: 1.0.2
 
 # The path to the Markdown (.md) readme file. This path is relative to the root of the collection
 readme: README.md
@@ -48,16 +48,16 @@ tags:
 dependencies: {}
 
 # The URL of the originating SCM repository
-repository: https://github.com/wenerme/wener.alpine
+repository: https://github.com/wenerme/ansible-collection-wenerme-alpine
 
 # The URL to any online docs
-documentation: https://github.com/wenerme/wener.alpine/tree/main/docs
+documentation: https://github.com/wenerme/ansible-collection-wenerme-alpine/tree/main/docs
 
 # The URL to the homepage of the collection/project
-homepage: https://github.com/wenerme/wener.alpine
+homepage: https://github.com/wenerme/ansible-collection-wenerme-alpine
 
 # The URL to the collection issue tracker
-issues: https://github.com/wenerme/wener.alpine/issue
+issues: https://github.com/wenerme/ansible-collection-wenerme-alpine/issue
 
 build_ignore:
 - tests/integration/inventory*

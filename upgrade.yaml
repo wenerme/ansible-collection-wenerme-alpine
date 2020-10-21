@@ -1,0 +1,37 @@
+- name: Upgrade and Reboot
+  hosts: all
+  vars_prompt:
+    - name: do_reboot
+      prompt: "Do you need to reboot (if openssh is upgraded preffer reboot)?"
+      private: no
+      default: false
+  roles:
+  - alpine
+  tasks:
+  - import_role:
+      name: alpine
+      tasks_from: apk-repo
+    vars:
+      alpine_version: "3.12"
+  - import_role:
+      name: alpine
+      tasks_from: apk-version
+
+  - name: nothing to upgrade
+    meta: end_play
+    when: (apk_upgradable_count|int) == 0
+
+  - pause:
+      seconds: 10
+      prompt: will upgrade now...
+
+  - import_role:
+      name: alpine
+      tasks_from: apk-upgrade
+    vars:
+      apk_upgrade_all: true
+
+  - name: reboot
+    become: true
+    raw: reboot
+    when: do_reboot|bool
