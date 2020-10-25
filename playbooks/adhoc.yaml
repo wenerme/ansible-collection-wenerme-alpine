@@ -3,6 +3,8 @@
   gather_facts: false
   roles:
     - alpine
+  collections:
+  - wenerme.alpine
   tasks:
   - add_host:
       name: "{{host | default('alpine_host')}}"

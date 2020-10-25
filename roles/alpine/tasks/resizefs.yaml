@@ -14,11 +14,14 @@
     changed_when: false
   - set_fact:
       root_part: "{{shell_result.stdout}}"
+      root_dev: "{{shell_result.stdout}}"
   - shell: lsblk -no pkname {{root_part}}
     register: shell_result
     changed_when: false
+    # /dev/vda will output nothing
   - set_fact:
       root_dev: "/dev/{{shell_result.stdout}}"
+    when: shell_result.stdout != ""
   when: root_dev is undefined
 
 - name: set root part
