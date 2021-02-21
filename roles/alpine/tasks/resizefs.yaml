@@ -1,4 +1,4 @@
-- name: required packages
+- name: resizeroofs | deps
   become: true
   package:
     name: "{{item}}"
@@ -7,7 +7,7 @@
   - e2fsprogs-extra
   - util-linux
 
-- name: detect root mount
+- name: resizeroofs | detect root mount
   block:
   - shell: sed -nr 's#^(/\S+)\s+/\s+.*#\1#p' /proc/mounts
     register: shell_result
@@ -24,21 +24,33 @@
     when: shell_result.stdout != ""
   when: root_dev is undefined
 
-- name: set root part
+- name: resizeroofs | default root dev to root part
+  set_fact:
+    root_dev: "{{root_part}}"
+  when: root_dev is undefined or root_dev == ""
+
+- name: resizeroofs | default root par to root dev part2
   set_fact:
     root_part: "{{root_dev}}2"
   when: root_part is undefined
 
-- name: resizing
+- assert:
+  that:
+    - root_dev is defined
+    - root_dev != ""
+    - root_part is defined
+    - root_part != ""
+
+- name: resizeroofs | resizing
   debug:
     msg: "Device {{root_dev}} - Partition {{root_part}}"
 
-- name: repartition - expand last partation
+- name: resizeroofs | expand last partation
   become: true
   raw: echo -e 'd\n\nn\n\n\n\n\n\np\nw\n' | fdisk {{root_dev}}
   register: repartition
 
-- name: resize2fs
+- name: resizeroofs | resize2fs
   become: true
   raw: resize2fs {{root_part}}
   when: repartition.changed

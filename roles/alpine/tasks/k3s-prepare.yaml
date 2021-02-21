@@ -26,15 +26,5 @@
     line: 'default_kernel_opts="\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory"'
   when: lineinfile.found is defined and not lineinfile.found
 
-- name: install basic package
-  become: true
-  apk:
-    name: '{{item}}'
-  loop:
-  - socat
-  - iproute2
-  - iptables
-  - ipset
-
 - import_tasks: machine-id.yaml
 - import_tasks: local-mount-share-root.yaml

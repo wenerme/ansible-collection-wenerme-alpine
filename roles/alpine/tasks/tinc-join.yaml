@@ -10,6 +10,9 @@
 # 如果网络名字相同 - 则直接跳过
 # 如果网络名字不同 - 则中止或者从新配置
 
+- debug:
+    msg: "{{inventory_hostname}} as {{tinc_name}} join {{tinc_netname}} through {{tinc_master}}"
+
 - name: tinc | check node exists
   become: true
   delegate_to: "{{tinc_master}}"

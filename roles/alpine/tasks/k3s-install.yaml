@@ -12,17 +12,21 @@
   - ipset
   - iptables
   - musl
+  - socat
+  - iproute2
+  - cni-plugins
 
-- name: k3s | install cni-plugins
-  become: true
-  apk:
-    repository: https://mirrors.aliyun.com/alpine/edge/community/
-    name: cni-plugins
+# < v3.13
+# - name: k3s | install cni-plugins
+#   become: true
+#   apk:
+#     repository: https://mirrors.aliyun.com/alpine/v3.13/community/
+#     name: cni-plugins
 
 - name: k3s | install k3s
   become: true
   apk:
-    # repository: https://mirrors.aliyun.com/alpine/edge/testing/
-    # 同步更快
-    repository: https://mirrors.tuna.tsinghua.edu.cn/alpine/edge/testing/
+    # < v3.13
+    # repository: https://mirrors.aliyun.com/alpine/v3.13/community/
+    # repository: https://mirrors.tuna.tsinghua.edu.cn/alpine/edge/testing/
     name: k3s

@@ -1,17 +1,18 @@
 - import_tasks: k3s-install.yaml
 - import_tasks: k3s-conf.yaml
 
-- include_tasks: docker-service.yaml
-  when: '"--docker" in k3s_env["K3S_OPTS"]'
-# - import_tasks: dbus-service.yaml
-
 - name: k3s | docker
   become: true
-  service:
-    name: docker
-    state: started
-    enabled: true
-  when: '"--docker" in k3s_env["K3S_OPTS"]'
+  block:
+  - include_tasks: docker-service.yaml
+  - service:
+      name: docker
+      state: started
+      enabled: true
+  when: >-
+    (k3s_env is defined and "--docker" in (k3s_env["K3S_OPTS"]|default("")))
+    or
+    (k3s_config is defined and (k3s_config["docker"]|default(false)))
 
 - name: k3s | server
   become: true
@@ -20,6 +21,13 @@
     state: started
     enabled: true
   when: k3s_role == "server"
+
+- name: k3s | server url
+  set_fact:
+    k3s_server_url: "{{k3s_config['server']}}"
+  when:
+  - k3s_server_url is undefined
+  - k3s_config is defined and 'server' in k3s_config
 
 - name: k3s | wait server {{k3s_server_url}}
   uri:
