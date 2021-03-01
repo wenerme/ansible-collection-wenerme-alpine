@@ -16,10 +16,22 @@
 
 - name: k3s | server
   become: true
-  service:
-    name: k3s
-    state: started
-    enabled: true
+  block:
+  - name: k3s server | service
+    service:
+      name: k3s
+      state: started
+      enabled: true
+  - name: k3s server | ping
+    uri:
+      url: "https://127.0.0.1:6443/ping"
+      validate_certs: false
+      return_content: yes
+    register: result
+    # until: result.msg == "pong"
+    until: result.status == 200
+    retries: 60
+    delay: 5
   when: k3s_role == "server"
 
 - name: k3s | server url

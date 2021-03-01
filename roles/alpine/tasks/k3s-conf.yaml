@@ -26,6 +26,13 @@
 
 # config
 
+- name: k3s | host config
+  set_fact:
+    k3s_config: "{{k3s_config | combine(k3s_host_config)}}"
+  when:
+  - k3s_config is defined
+  - k3s_host_config is defined
+
 - name: k3s | k3s/config
   become: true
   copy:
