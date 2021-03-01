@@ -6,3 +6,16 @@ A collection of tasks for managning AlpineLinux
 ```bash
 ansible-galaxy collection install wenerme.alpine
 ```
+
+* apk
+* consul
+* docker
+* haproxy
+* k3s
+* nextcloud
+* pdns - PowerDNS
+* prometheus
+* setup
+* tinc
+* zerotier
+* zfs
