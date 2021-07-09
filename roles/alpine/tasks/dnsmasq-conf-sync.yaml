@@ -6,15 +6,17 @@
     line: conf-dir=/etc/dnsmasq.d
     create: true
     regex: '^\s*conf-dir='
+    mode: 0644
   when: dnsmasq_include_dir is undefined or dnsmasq_include_dir
   notify: dnsmasq-reload
 
 - name: write inline resolv.dnsmasq.conf
   become: true
   copy:
-      dest: /etc/resolv.dnsmasq.conf
-      content: |
-        {{dnsmasq_resolv_conf}}
+    dest: /etc/resolv.dnsmasq.conf
+    mode: 0644
+    content: |
+      {{ dnsmasq_resolv_conf }}
   when: dnsmasq_resolv_conf is defined
   notify: dnsmasq-reload
 
@@ -25,6 +27,7 @@
     line: resolv-file=/etc/resolv.dnsmasq.conf
     create: true
     regex: '^\s*resolv-file='
+    mode: 0644
   when: dnsmasq_include_dir is undefined or dnsmasq_include_dir
   notify: dnsmasq-reload
 

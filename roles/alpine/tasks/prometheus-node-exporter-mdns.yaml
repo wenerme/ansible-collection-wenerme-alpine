@@ -6,6 +6,7 @@
   become: true
   copy:
     dest: /etc/avahi/services/node-exporter.service
+    mode: 0644
     content: |
       <service-group>
         <name replace-wildcards="yes">%h</name>

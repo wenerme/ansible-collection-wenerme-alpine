@@ -3,14 +3,14 @@
 # start master node first
 - name: tinc | master
   block:
-  - include_tasks: tinc-init.yaml
-  - include_tasks: tinc-conf.yaml
-  - include_tasks: tinc-supervise-start.yaml
+    - include_tasks: tinc-init.yaml
+    - include_tasks: tinc-conf.yaml
+    - include_tasks: tinc-supervise-start.yaml
   when: tinc_master == inventory_hostname
 
 - name: tinc | nodes
   block:
-  - include_tasks: tinc-join.yaml
-  - include_tasks: tinc-conf.yaml
-  - include_tasks: tinc-supervise-start.yaml
+    - include_tasks: tinc-join.yaml
+    - include_tasks: tinc-conf.yaml
+    - include_tasks: tinc-supervise-start.yaml
   when: tinc_master != inventory_hostname

@@ -1,7 +1,7 @@
 - name: samba | inline conf
   become: true
   copy:
-      dest: /etc/samba/smb.conf
-      content: "{{samba_conf_inline}}"
+    dest: /etc/samba/smb.conf
+    content: "{{ samba_conf_inline }}"
   when: samba_conf_inline is defined
   notify: samba-reload

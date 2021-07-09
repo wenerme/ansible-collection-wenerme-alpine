@@ -12,5 +12,5 @@
     # UUID without dash
     # uuidgen | tr '[:upper:]' '[:lower:]' | sed 's/-//g'
     dest: /etc/machine-id
-    content: "{{999999999 | random | to_uuid | regex_replace('-', '')}}"
+    content: "{{ 999999999 | random | to_uuid | regex_replace('-', '') }}"
   when: not stat.stat.exists or (machine_id_force | default(false))

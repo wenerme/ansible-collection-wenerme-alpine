@@ -6,9 +6,9 @@
 
 - name: install virt packages
   apk:
-    name: "{{item}}"
+    name: "{{ item }}"
   loop:
-  - qemu-guest-agent
+    - qemu-guest-agent
 
 - name: trigger udev
   shell: udevadm trigger

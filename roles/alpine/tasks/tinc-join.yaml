@@ -1,8 +1,8 @@
 - import_tasks: tinc-install.yaml
 - import_tasks: tinc-preset.yaml
 
-# - name: tinc | check network {{tinc_netname}} exists
-#   shell: tinc network | grep '^{{tinc_netname}}$'
+# - name: tinc | check network {{ tinc_netname }} exists
+#   shell: tinc network | grep '^{{ tinc_netname }}$'
 #   register: shell_result
 #   changed_when: false
 #   failed_when: shell_result.rc != 0
@@ -10,33 +10,34 @@
 # 如果网络名字相同 - 则直接跳过
 # 如果网络名字不同 - 则中止或者从新配置
 
-- debug:
-    msg: "{{inventory_hostname}} as {{tinc_name}} join {{tinc_netname}} through {{tinc_master}}"
+- name: tinc | info
+  debug:
+    msg: "{{ inventory_hostname }} as {{ tinc_name }} join {{ tinc_netname }} through {{ tinc_master }}"
 
 - name: tinc | check node exists
   become: true
-  delegate_to: "{{tinc_master}}"
+  delegate_to: "{{ tinc_master }}"
   environment:
-    NETNAME: "{{tinc_netname}}"
-  shell: "tinc info {{tinc_name}}"
+    NETNAME: "{{ tinc_netname }}"
+  command: "tinc info {{ tinc_name }}"
   register: tinc_check_out
   changed_when: false
   failed_when: tinc_check_out.rc not in [ 0, 1 ]
 
-- name: tinc | invite node to {{tinc_netname}}
+- name: tinc | invite node to {{ tinc_netname }}
   become: true
-  delegate_to: "{{tinc_master}}"
+  delegate_to: "{{ tinc_master }}"
   environment:
-    NETNAME: "{{tinc_netname}}"
-  shell: "tinc invite {{tinc_name}}"
+    NETNAME: "{{ tinc_netname }}"
+  command: "tinc invite {{ tinc_name }}"
   register: tinc_invite_out
   when: tinc_check_out.rc == 1
 
 # - name: join url
 #   debug:
-#     msg: "{{tinc_invite_out.stdout}}"
+#     msg: "{{ tinc_invite_out.stdout }}"
 
 - name: tinc | join tinc
   become: true
-  shell: "tinc join {{tinc_invite_out.stdout}}"
+  command: "tinc join {{ tinc_invite_out.stdout }}"
   when: tinc_check_out.rc == 1

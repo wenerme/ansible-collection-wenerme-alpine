@@ -1,17 +1,16 @@
-
 - name: ensure udev
   include_tasks: ensure-service.yaml
   vars:
-  - service_name: udev
+    - service_name: udev
 
-- name: "install zfs with kernal {{ansible_kernel}}"
+- name: "install zfs with kernal {{ ansible_kernel }}"
   become: true
   apk:
-    name: '{{item}}'
+    name: "{{ item }}"
   loop:
-  - zfs
-  - zfs-udev
-  - "zfs-{{ansible_kernel | regex_search('-([a-z]*?)$','\\1') | first | default('vanilla')}}"
+    - zfs
+    - zfs-udev
+    - "zfs-{{ ansible_kernel | regex_search('-([a-z]*?)$','\\1') | first | default('vanilla') }}"
 
 - name: load zfs module
   become: true
@@ -25,27 +24,27 @@
     path: /etc/modules-load.d/zfs.conf
     line: zfs
     create: true
+    mode: 0644
 
 - name: start zfs
   become: true
   service:
-    name: '{{item}}'
+    name: "{{ item }}"
     state: started
   loop:
-  - zfs-import
-  - zfs-mount
+    - zfs-import
+    - zfs-mount
   tags:
-  - service-start
+    - service-start
 
 - name: enable zfs on boot
   become: true
   service:
-    name: '{{item}}'
+    name: "{{ item }}"
     enabled: true
     runlevel: sysinit
   loop:
-  - zfs-import
-  - zfs-mount
+    - zfs-import
+    - zfs-mount
   tags:
-  - service-enable
-
+    - service-enable

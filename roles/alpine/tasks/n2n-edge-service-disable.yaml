@@ -11,7 +11,7 @@
 - name: n2n edge | stop instance service
   become: true
   service:
-    name: edge.{{edge.instance}}
+    name: edge.{{ edge.instance }}
     state: stopped
     enabled: false
   when: edge.instance is defined
@@ -19,6 +19,6 @@
 - name: n2n edge | unlink instance
   become: true
   file:
-    path: /etc/init.d/edge.{{edge.instance}}
+    path: /etc/init.d/edge.{{ edge.instance }}
     state: absent
   when: edge.instance is defined

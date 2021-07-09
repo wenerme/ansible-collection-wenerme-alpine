@@ -3,11 +3,11 @@
 - name: k3s | docker
   become: true
   block:
-  - include_tasks: docker-service.yaml
-  - service:
-      name: docker
-      state: started
-      enabled: true
+    - include_tasks: docker-service.yaml
+    - service:
+        name: docker
+        state: started
+        enabled: true
   when: >-
     (k3s_env is defined and "--docker" in (k3s_env["K3S_OPTS"]|default("")))
     or
@@ -16,33 +16,33 @@
 - name: k3s | server
   become: true
   block:
-  - name: k3s server | service
-    service:
-      name: k3s
-      state: started
-      enabled: true
-  - name: k3s server | ping
-    uri:
-      url: "https://127.0.0.1:6443/ping"
-      validate_certs: false
-      return_content: yes
-    register: result
-    # until: result.msg == "pong"
-    until: result.status == 200
-    retries: 60
-    delay: 5
+    - name: k3s server | service
+      service:
+        name: k3s
+        state: started
+        enabled: true
+    - name: k3s server | ping
+      uri:
+        url: "https://127.0.0.1:6443/ping"
+        validate_certs: false
+        return_content: yes
+      register: result
+      # until: result.msg == "pong"
+      until: result.status == 200
+      retries: 60
+      delay: 5
   when: k3s_role == "server"
 
 - name: k3s | server url
   set_fact:
-    k3s_server_url: "{{k3s_config['server']}}"
+    k3s_server_url: "{{ k3s_config['server'] }}"
   when:
-  - k3s_server_url is undefined
-  - k3s_config is defined and 'server' in k3s_config
+    - k3s_server_url is undefined
+    - k3s_config is defined and 'server' in k3s_config
 
-- name: k3s | wait server {{k3s_server_url}}
+- name: k3s | wait server {{ k3s_server_url }}
   uri:
-    url: "{{k3s_server_url}}/ping"
+    url: "{{ k3s_server_url }}/ping"
     validate_certs: false
     return_content: yes
   register: result

@@ -1,46 +1,48 @@
 - name: resolv.conf candicates
   set_fact:
     resolv_conf_paths:
-    - "files/{{inventory_hostname}}/resolv.conf.j2"
-    - "files/{{inventory_hostname}}/resolv.conf"
-    - "files/{{working_group|default('')}}/resolv.conf.j2"
-    - "files/{{working_group|default('')}}/resolv.conf"
-    - "files/resolv.conf.j2"
-    - "files/resolv.conf"
+      - "files/{{ inventory_hostname }}/resolv.conf.j2"
+      - "files/{{ inventory_hostname }}/resolv.conf"
+      - "files/{{ working_group|default('') }}/resolv.conf.j2"
+      - "files/{{ working_group|default('') }}/resolv.conf"
+      - "files/resolv.conf.j2"
+      - "files/resolv.conf"
   when:
-  - resolv_conf_inline is undefined
-  - resolv_conf_paths is undefined
+    - resolv_conf_inline is undefined
+    - resolv_conf_paths is undefined
 
 - name: resolv.conf path
   set_fact:
-    resolv_conf_path: "{{resolv_conf_path|default(lookup('first_found', resolv_conf_paths, errors='ignore'))}}"
+    resolv_conf_path: "{{ resolv_conf_path|default(lookup('first_found', resolv_conf_paths, errors='ignore')) }}"
   when:
-  - resolv_conf_inline is undefined
-  - resolv_conf_path is undefined
+    - resolv_conf_inline is undefined
+    - resolv_conf_path is undefined
 
-- name: sync {{resolv_conf_path}} file
+- name: sync {{ resolv_conf_path }} file
   become: true
   copy:
-    src: "{{resolv_conf_path}}"
+    src: "{{ resolv_conf_path }}"
     dest: /etc/resolv.conf
   when:
-  - resolv_conf_path is defined
-  - resolv_conf_path is file
-  - resolv_conf_path is not regex('[.]j2$')
+    - resolv_conf_path is defined
+    - resolv_conf_path is file
+    - resolv_conf_path is not regex('[.]j2$')
 
-- name: template {{resolv_conf_path}} file
+- name: template {{ resolv_conf_path }} file
   become: true
   template:
-    src: "{{resolv_conf_path}}"
+    src: "{{ resolv_conf_path }}"
     dest: /etc/resolv.conf
+    mode: 0644
   when:
-  - resolv_conf_path is defined
-  - resolv_conf_path is file
-  - resolv_conf_path is regex('[.]j2$')
+    - resolv_conf_path is defined
+    - resolv_conf_path is file
+    - resolv_conf_path is regex('[.]j2$')
 
 - name: write inline resolv.conf
   become: true
   copy:
-      dest: /etc/resolv.conf
-      content: "{{resolv_conf_inline}}"
+    dest: /etc/resolv.conf
+    content: "{{ resolv_conf_inline }}"
+    mode: 0644
   when: resolv_conf_inline is defined

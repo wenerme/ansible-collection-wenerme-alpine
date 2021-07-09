@@ -1,10 +1,10 @@
 - name: tinyproxy | install
   become: true
   package:
-    name: "{{item}}"
+    name: "{{ item }}"
     state: present
   loop:
-  - tinyproxy
+    - tinyproxy
 
 - import_tasks: tinyproxy-conf.yaml
 

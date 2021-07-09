@@ -5,27 +5,27 @@
 
 - name: ensure dir
   file:
-    path: "{{k3s_credentials_path}}"
+    path: "{{ k3s_credentials_path }}"
     state: directory
 
 - name: pull server token
   become: true
   fetch:
-    src: "{{item.src}}"
-    dest: "{{k3s_credentials_path}}/{{item.dest}}"
+    src: "{{ item.src }}"
+    dest: "{{ k3s_credentials_path }}/{{ item.dest }}"
     flat: true
   loop:
-  - { src: /var/lib/rancher/k3s/server/token, dest: k3s-server-token }
-  - { src: /etc/rancher/k3s/k3s.yaml, dest: k3s.yaml }
+    - { src: /var/lib/rancher/k3s/server/token, dest: k3s-server-token }
+    - { src: /etc/rancher/k3s/k3s.yaml, dest: k3s.yaml }
 
 - name: pull tls
   become: true
   fetch:
-    src: /var/lib/rancher/k3s/server/tls/{{item}}
-    dest: "{{k3s_credentials_path}}/{{item}}"
+    src: /var/lib/rancher/k3s/server/tls/{{ item }}
+    dest: "{{ k3s_credentials_path }}/{{ item }}"
     flat: true
   loop:
-  - client-ca.key
-  - client-ca.crt
-  - server-ca.key
-  - server-ca.crt
+    - client-ca.key
+    - client-ca.crt
+    - server-ca.key
+    - server-ca.crt

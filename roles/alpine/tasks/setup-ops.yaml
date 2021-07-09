@@ -1,29 +1,29 @@
 - name: install packages for ops
   become: true
   apk:
-    name: "{{item}}"
+    name: "{{ item }}"
   loop:
-  - bash
-  - bash-completion
-  - tmux
-  - mosh
-  - file
-  - tree
-  - rsync
-  - htop
-  # 网络
-  - iftop
-  - tcpdump
-  - bind-tools
-  # info
-  - neofetch
-  - util-linux
-  - util-linux-bash-completion
-  # sshrc needs
-  - vim
-  - tar
-  - coreutils
-  - openssl
+    - bash
+    - bash-completion
+    - tmux
+    - mosh
+    - file
+    - tree
+    - rsync
+    - htop
+    # 网络
+    - iftop
+    - tcpdump
+    - bind-tools
+    # info
+    - neofetch
+    - util-linux
+    - util-linux-bash-completion
+    # sshrc needs
+    - vim
+    - tar
+    - coreutils
+    - openssl
 
 # common op service
 # crond local

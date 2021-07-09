@@ -3,7 +3,7 @@
 - name: stop tinc
   become: true
   environment:
-    NETNAME: "{{tinc_netname}}"
+    NETNAME: "{{ tinc_netname }}"
   shell: tinc pid &>/dev/null && tinc stop && echo 1 || echo 0
   register: tinc_stop_out
   changed_when: tinc_stop_out.stdout == '1'

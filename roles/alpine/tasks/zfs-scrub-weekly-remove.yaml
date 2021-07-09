@@ -1,5 +1,5 @@
-- name: zfs | remove weekly zfs-scrub-{{zfs_pool}}
+- name: zfs | remove weekly zfs-scrub-{{ zfs_pool }}
   become: true
   file:
-    path: /etc/periodic/weekly/zfs-scrub-{{zfs_pool}}
+    path: /etc/periodic/weekly/zfs-scrub-{{ zfs_pool }}
     state: absent

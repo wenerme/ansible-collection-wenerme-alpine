@@ -1,17 +1,17 @@
 - name: longhorn | install deps
   become: true
   apk:
-    name: "{{item}}"
+    name: "{{ item }}"
   loop:
-  - open-iscsi
-  - curl
-  - findmnt
-  - grep
-  - gawk
-  - blkid
-  - lsblk
-  - util-linux
-  - nfs-utils
+    - open-iscsi
+    - curl
+    - findmnt
+    - grep
+    - gawk
+    - blkid
+    - lsblk
+    - util-linux
+    - nfs-utils
 
 - name: longhorn | start iscsi
   become: true

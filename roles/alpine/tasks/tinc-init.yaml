@@ -3,12 +3,12 @@
 
 - name: tinc | check network exists
   stat:
-    path: "{{tinc_conf_dir}}"
+    path: "{{ tinc_conf_dir }}"
   register: stat_result
 
 - name: tinc | init
   become: true
   environment:
-    NETNAME: "{{tinc_netname}}"
-  shell: "tinc init {{tinc_name}}"
+    NETNAME: "{{ tinc_netname }}"
+  command: "tinc init {{ tinc_name }}"
   when: not stat_result.stat.exists

@@ -3,6 +3,7 @@
   file:
     path: /etc/rancher/k3s
     state: directory
+    mode: 0755
 
 # registries
 
@@ -11,49 +12,52 @@
   copy:
     src: files/k3s-registries.yaml
     dest: /etc/rancher/k3s/registries.yaml
+    mode: 0644
   when:
-  - inv_name is undefined or not (inv_name+'/files/k3s-registries.yaml') is file
-  - "'files/k3s-registries.yaml' is file"
+    - inv_name is undefined or not (inv_name+'/files/k3s-registries.yaml') is file
+    - "'files/k3s-registries.yaml' is file"
 
 - name: k3s | inventory k3s/registries
   become: true
   copy:
-    src: "{{inv_name}}/files/k3s-registries.yaml"
+    src: "{{ inv_name }}/files/k3s-registries.yaml"
     dest: /etc/rancher/k3s/registries.yaml
+    mode: 0644
   when:
-  - inv_name is defined
-  - (inv_name+'/files/k3s-registries.yaml') is file
+    - inv_name is defined
+    - (inv_name+'/files/k3s-registries.yaml') is file
 
 # config
 
 - name: k3s | host config
   set_fact:
-    k3s_config: "{{k3s_config | combine(k3s_host_config)}}"
+    k3s_config: "{{ k3s_config | combine(k3s_host_config) }}"
   when:
-  - k3s_config is defined
-  - k3s_host_config is defined
+    - k3s_config is defined
+    - k3s_host_config is defined
 
 - name: k3s | k3s/config
   become: true
   copy:
-    content: "{{k3s_config | to_nice_yaml}}"
+    content: "{{ k3s_config | to_nice_yaml }}"
     dest: /etc/rancher/k3s/config.yaml
+    mode: 0644
   when:
-  - k3s_config is defined
+    - k3s_config is defined
 
 # - name: k3s | setup env
 #   set_fact:
 #     k3s_env: "{{ {'K3S_EXEC': k3s_exec,'K3S_OPTS': k3s_opts,'PATH': path } | combine(k3s_env|default({})) }}"
 #   vars:
-#     k3s_opts: "{{k3s_options|default('')}}"
-#     k3s_exec: "{{'agent' if (k3s_role|default(''))!='server' else 'server'}}"
+#     k3s_opts: "{{ k3s_options|default('') }}"
+#     k3s_exec: "{{ 'agent' if (k3s_role|default(''))!='server' else 'server' }}"
 #     path: "/usr/libexec/cni:$PATH"
 
 - name: k3s | exec
   set_fact:
-    k3s_env: "{{ k3s_env|default({}) | combine( {'K3S_EXEC': k3s_exec} ) }}"
+    k3s_env: "{{ k3s_env | default({}) | combine( {'K3S_EXEC': k3s_exec} ) }}"
   vars:
-    k3s_exec: "{{'agent' if (k3s_role|default(''))!='server' else 'server'}}"
+    k3s_exec: "{{ 'agent' if (k3s_role|default(''))!='server' else 'server' }}"
 
 # - name: debug
 #   debug:
@@ -64,8 +68,9 @@
   lineinfile:
     path: /etc/conf.d/k3s
     line: >-
-      {{'' if item.key in ['K3S_EXEC', 'K3S_OPTS'] else 'export ' }}{{item.key}}={{item.value is number | ternary(item.value, '"'+(item.value|string)+'"')}}
-    regex: '^(#|export|\s)*{{item.key}}\s*='
-  loop: "{{k3s_env | dict2items}}"
+      {{ '' if item.key in ['K3S_EXEC', 'K3S_OPTS'] else 'export ' }}{{ item.key }}={{ item.value is number | ternary( item.value , '"'+( item.value | string )+'"') }}
+    regex: '^(#|export|\s)*{{ item.key }}\s*='
+    mode: preserve
+  loop: "{{ k3s_env | dict2items }}"
   when:
-  - k3s_env is defined
+    - k3s_env is defined

@@ -4,30 +4,31 @@
     service_name: quagga
   when: service_conf_path is undefined
 
-- name: quagga {{quagga_daemon}} preset
+- name: quagga {{ quagga_daemon }} preset
   set_fact:
-    quagga_conf_file: /etc/quagga/{{quagga_daemon}}.conf
-    quagga_local_conf_file: "{{service_conf_path}}/{{quagga_daemon}}.conf"
-    quagga_local_conf_tpl_file: "{{service_conf_path}}/{{quagga_daemon}}.conf.j2"
-- name: sync {{quagga_daemon}} config
+    quagga_conf_file: /etc/quagga/{{ quagga_daemon }}.conf
+    quagga_local_conf_file: "{{ service_conf_path }}/{{ quagga_daemon }}.conf"
+    quagga_local_conf_tpl_file: "{{ service_conf_path }}/{{ quagga_daemon }}.conf.j2"
+- name: sync {{ quagga_daemon }} config
   become: true
   copy:
-    dest: "{{quagga_conf_file}}"
-    src: "{{quagga_local_conf_file}}"
+    dest: "{{ quagga_conf_file }}"
+    src: "{{ quagga_local_conf_file }}"
     owner: quagga
     group: quagga
     # quagga need setuidgid
     # FIXME ansible　use $HOME/.ansible/tmp as remote_tmp cause Permission denie after setuid
-    # validate: "sudo {{quagga_daemon}} -C -f %s"
+    # validate: "sudo {{ quagga_daemon }} -C -f %s"
   when: quagga_local_conf_file is file
-  notify: quagga-{{quagga_daemon}}-reload
-- name: template {{quagga_daemon}} config
+  notify: quagga-{{ quagga_daemon }}-reload
+- name: template {{ quagga_daemon }} config
   become: true
   template:
-    dest: "{{quagga_conf_file}}"
-    src: "{{quagga_local_conf_tpl_file}}"
+    dest: "{{ quagga_conf_file }}"
+    src: "{{ quagga_local_conf_tpl_file }}"
     owner: quagga
     group: quagga
-    # validate: "sudo {{quagga_daemon}} -C -f %s"
+    mode: 0644
+    # validate: "sudo {{ quagga_daemon }} -C -f %s"
   when: quagga_local_conf_tpl_file is file
-  notify: quagga-{{quagga_daemon}}-reload
+  notify: quagga-{{ quagga_daemon }}-reload

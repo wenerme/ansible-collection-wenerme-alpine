@@ -4,5 +4,5 @@
 - name: apk upgrade
   become: true
   apk:
-    available: "{{apk_upgrade_all|default(false)}}"
-    upgrade: yes
+    available: "{{ apk_upgrade_all|default(false) }}"
+    upgrade: true

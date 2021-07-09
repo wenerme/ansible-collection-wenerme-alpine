@@ -47,10 +47,10 @@
         eend $?
       }
 
-- name: tinc | install tincd.{{tinc_netname}}
+- name: tinc | install tincd.{{ tinc_netname }}
   become: true
   file:
-    dest: /etc/init.d/tincd.{{tinc_netname}}
+    dest: /etc/init.d/tincd.{{ tinc_netname }}
     src: /etc/init.d/tincd.netname
     state: link
   when: tinc_netname is defined

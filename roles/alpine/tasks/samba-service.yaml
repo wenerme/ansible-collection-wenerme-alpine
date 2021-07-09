@@ -1,11 +1,11 @@
 - name: samba | install
   become: true
   package:
-    name: "{{item}}"
+    name: "{{ item }}"
     state: present
   loop:
-  - samba
-  - samba-dc
+    - samba
+    - samba-dc
 
 - import_tasks: samba-conf.yaml
 

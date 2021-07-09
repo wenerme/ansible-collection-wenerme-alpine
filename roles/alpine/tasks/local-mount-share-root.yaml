@@ -1,4 +1,3 @@
-
 # Error response from daemon: linux mounts: path /var/lib/rancher is mounted on / but it is not a shared mount
 # findmnt -o TARGET,PROPAGATION /
 - name: shared root

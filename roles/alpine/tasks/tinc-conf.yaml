@@ -3,28 +3,28 @@
 # - name: debug vars
 #   debug:
 #     msg:
-#     - "NETNAME: {{tinc_netname}}"
-#     - "Interface Mode: {{tinc_interface_mode}}"
+#     - "NETNAME: {{ tinc_netname }}"
+#     - "Interface Mode: {{ tinc_interface_mode }}"
 
 - name: tinc | apply tinc conf
   become: true
   lineinfile:
-    path: "{{tinc_conf_dir}}/tinc.conf"
-    line: '{{item.name}}={{item.value}}'
-    regex: '^[^#]*?{{item.name}}(\s|=)'
-    state: "{{item.state|default('present')}}"
-  loop: "{{tinc_conf}}"
+    path: "{{ tinc_conf_dir }}/tinc.conf"
+    line: '{{ item.name }}={{ item.value }}'
+    regex: '^[^#]*?{{ item.name }}(\s|=)'
+    state: "{{ item.state|default('present') }}"
+  loop: "{{ tinc_conf }}"
   when: tinc_conf is defined and (tinc_conf|length > 0)
   notify: tinc-reload
 
 - name: tinc | apply host conf
   become: true
   lineinfile:
-    path: "{{tinc_conf_dir}}/hosts/{{tinc_name}}"
-    line: '{{item.name}}={{item.value}}'
-    regex: '^[^#]*?{{item.name}}(\s|=)'
-    state: "{{item.state|default('present')}}"
-  loop: "{{tinc_host_conf}}"
+    path: "{{ tinc_conf_dir }}/hosts/{{ tinc_name }}"
+    line: '{{ item.name }}={{ item.value }}'
+    regex: '^[^#]*?{{ item.name }}(\s|=)'
+    state: "{{ item.state|default('present') }}"
+  loop: "{{ tinc_host_conf }}"
   when: tinc_host_conf is defined and (tinc_host_conf|length > 0)
   notify: "tinc-restart"
 
@@ -33,33 +33,36 @@
 - name: tinc | tinc-up static-address conf
   become: true
   copy:
-    dest: "{{tinc_conf_dir}}/tinc-up"
+    dest: "{{ tinc_conf_dir }}/tinc-up"
+    mode: 0644
     content: |
       #!/bin/sh
-      ifconfig $INTERFACE {{tinc_address|ipaddr('address')}} netmask {{tinc_subnet|default(tinc_address)|ipaddr('netmask')}}
-      {{tinc_conf_tinc_up_extra|default('')}}
+      ifconfig $INTERFACE {{ tinc_address|ipaddr('address') }} netmask {{ tinc_subnet|default(tinc_address)|ipaddr('netmask') }}
+      {{ tinc_conf_tinc_up_extra|default('') }}
   when: tinc_interface_mode == 'static-address'
   notify: "tinc-restart"
 
 - name: tinc | tinc-up bridge conf
   become: true
   copy:
-    dest: "{{tinc_conf_dir}}/tinc-up"
+    dest: "{{ tinc_conf_dir }}/tinc-up"
+    mode: 0644
     content: |
       #!/bin/sh
-      ip li set $INTERFACE master {{tinc_bridge_master}}
+      ip li set $INTERFACE master {{ tinc_bridge_master }}
       ip li set $INTERFACE up
-      {{tinc_conf_tinc_up_extra|default('')}}
+      {{ tinc_conf_tinc_up_extra|default('') }}
   when: tinc_interface_mode == 'bridge'
   notify: "tinc-restart"
 
 - name: tinc | tinc-up empty conf
   become: true
   copy:
-    dest: "{{tinc_conf_dir}}/tinc-up"
+    dest: "{{ tinc_conf_dir }}/tinc-up"
+    mode: 0644
     content: |
       #!/bin/sh
-      {{tinc_conf_tinc_up_extra|default('')}}
+      {{ tinc_conf_tinc_up_extra|default('') }}
   when: tinc_interface_mode == 'empty'
   notify: "tinc-restart"
 
@@ -67,8 +70,9 @@
 - name: tinc | tinc-down conf
   become: true
   copy:
-    dest: "{{tinc_conf_dir}}/tinc-down"
+    dest: "{{ tinc_conf_dir }}/tinc-down"
+    mode: 0644
     content: |
       #!/bin/sh
-      {{tinc_conf_tinc_down_extra|default('')}}
+      {{ tinc_conf_tinc_down_extra|default('') }}
   when: tinc_conf_tinc_down_extra is defined

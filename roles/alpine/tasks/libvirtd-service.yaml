@@ -1,41 +1,41 @@
 - name: install qemu
   become: true
   apk:
-    name: "{{item}}"
+    name: "{{ item }}"
   loop:
-  - qemu
-  - qemu-system-x86_64
-  - qemu-img
-  - qemu-ui-curses
-  - libvirt-daemon
-  - libvirt-qemu
-  - libvirt-bash-completion
-  # virt-install need these packages
-  - py3-libvirt
-  - py3-libxml2
-  - virt-install
-  # group auth
-  - polkit
-  # ansible
-  - py3-lxml
+    - qemu
+    - qemu-system-x86_64
+    - qemu-img
+    - qemu-ui-curses
+    - libvirt-daemon
+    - libvirt-qemu
+    - libvirt-bash-completion
+    # virt-install need these packages
+    - py3-libvirt
+    - py3-libxml2
+    - virt-install
+    # group auth
+    - polkit
+    # ansible
+    - py3-lxml
 
 # virt-host-validate recommand vhost_net for better virtio performance
 # suggeest intel_iommu=on https://www.kernel.org/doc/Documentation/Intel-IOMMU.txt
 - name: load modules
   become: true
   modprobe:
-    name: "{{item}}"
+    name: "{{ item }}"
     state: present
   loop: &modules
-  - tun
-  - kvm-intel
-  - vhost_net
+    - tun
+    - kvm-intel
+    - vhost_net
 
 - name: persist mpdules
   become: true
   lineinfile:
     path: /etc/modules-load.d/kvm.conf
-    line: "{{item}}"
+    line: "{{ item }}"
     create: true
   loop: *modules
 
@@ -43,13 +43,13 @@
   become: true
   user:
     name: admin
-    groups: "{{item}}"
+    groups: "{{ item }}"
     state: present
     append: true
   loop:
-  - kvm
-  - qemu
-  - libvirt
+    - kvm
+    - qemu
+    - libvirt
 
 # allowed qemu:///session to bridge virbr0
 # session can not create network

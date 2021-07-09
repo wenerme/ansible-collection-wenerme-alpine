@@ -1,4 +1,3 @@
-
 - name: pdns conf sync
   include_role:
     name: alpine

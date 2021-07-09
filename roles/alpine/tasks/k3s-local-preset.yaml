@@ -1,5 +1,5 @@
 - name: setup ansible_architecture
-  setup: {}
+  setup: { }
   when: ansible_architecture is undefined
 
 - name: detect arch
@@ -28,27 +28,27 @@
 
 - name: set latest version
   set_fact:
-    k3s_version_latest: "{{shell.stdout}}"
+    k3s_version_latest: "{{ shell.stdout }}"
   when: k3s_version is undefined
 
 - name: set version
   set_fact:
-    k3s_version: "{{k3s_version|default(shell.stdout)}}"
-    k3s_arch: "{{k3s_arch|default('amd64')}}"
-    k3s_release_url: "{{k3s_release_url|default('https://github.com/rancher/k3s/releases/download')}}"
+    k3s_version: "{{ k3s_version|default(shell.stdout) }}"
+    k3s_arch: "{{ k3s_arch|default('amd64') }}"
+    k3s_release_url: "{{ k3s_release_url|default('https://github.com/rancher/k3s/releases/download') }}"
 
 - name: set k3s facts
   set_fact:
-    k3s_download_url: "{{k3s_download_url|default(k3s_release_url+'/'+k3s_version)}}"
-    k3s_local_path: "files/k3s/{{k3s_version}}/{{k3s_arch}}"
+    k3s_download_url: "{{ k3s_download_url|default(k3s_release_url+'/'+k3s_version) }}"
+    k3s_local_path: "files/k3s/{{ k3s_version }}/{{ k3s_arch }}"
 
 - name: write latest version
   delegate_to: localhost
   copy:
     dest: "files/k3s/version.txt"
-    content: "{{k3s_version_latest}}"
+    content: "{{ k3s_version_latest }}"
   when: k3s_version_latest is defined
 
 - name: report
   debug:
-    msg: "K3S {{k3s_arch}} {{k3s_version}}"
+    msg: "K3S {{ k3s_arch }} {{ k3s_version }}"

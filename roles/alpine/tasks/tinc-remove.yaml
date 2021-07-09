@@ -8,5 +8,5 @@
 - name: remove tinc host conf
   become: true
   file:
-    path: "{{tinc_conf_dir}}"
+    path: "{{ tinc_conf_dir }}"
     state: absent

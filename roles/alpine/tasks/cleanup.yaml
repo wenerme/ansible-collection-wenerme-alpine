@@ -1,7 +1,7 @@
 - name: remove shell history
   raw: rm ~/.ash_history ~/.bash_history
-  ignore_errors: true
+  failed_when: false
 
 - name: remove ansible temp files
   raw: rm -rf ~/.ansible
-  ignore_errors: true
+  failed_when: false

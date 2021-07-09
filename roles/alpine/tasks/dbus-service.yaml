@@ -1,9 +1,9 @@
 - name: dbus | install
   become: true
   apk:
-    name: "{{item}}"
+    name: "{{ item }}"
   loop:
-  - dbus
+    - dbus
   # - dbus-openrc
 
 # 可能存在已失效的 /var/run/dbus.pid 导致启动失败
@@ -12,6 +12,8 @@
   shell: |
     [ -e /var/run/dbus.pid ] && [ ! -d "/proc/$(cat /var/run/dbus.pid )" ] && rm /var/run/dbus.pid
   failed_when: false
+  # TODO
+  changed_when: false
 
 - name: dbus | start
   become: true

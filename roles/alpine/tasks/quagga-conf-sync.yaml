@@ -6,12 +6,12 @@
 - name: sync quagga configs
   include_tasks: quagga-daemon-conf-sync.yaml
   vars:
-    quagga_daemon: "{{item}}"
+    quagga_daemon: "{{ item }}"
   loop:
-  - zebra
-  - ripd
-  - ripngd
-  - ospfd
-  - ospf6d
-  - bgpd
+    - zebra
+    - ripd
+    - ripngd
+    - ospfd
+    - ospf6d
+    - bgpd
   when: service_conf_path is directory

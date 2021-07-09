@@ -4,16 +4,19 @@
   roles:
     - alpine
   collections:
-  - wenerme.alpine
+    - wenerme.alpine
   tasks:
-  - add_host:
-      name: "{{host | default('alpine_host')}}"
-      ansible_ssh_host: "{{ host | default('127.0.0.1') }}"
-      ansible_ssh_port: "{{ port | default('22') }}"
-    when: port is defined or host is defined
+    - add_host:
+        name: "{{ host | default('alpine_host') }}"
+        ansible_ssh_host: "{{ host | default('127.0.0.1') }}"
+        ansible_ssh_port: "{{ port | default('22') }}"
+      when: port is defined or host is defined
+      name: adhoc | add default host
 
-  - setup:
-    when: facts | default(false)
-  - include_role:
-      name: "{{role | default('alpine')}}"
-      tasks_from: '{{task}}'
+    - setup:
+      when: facts | default(false)
+      name: adhoc | setup
+    - include_role:
+        name: "{{ role | default('alpine') }}"
+        tasks_from: "{{ task }}"
+      name: adhoc | run role task

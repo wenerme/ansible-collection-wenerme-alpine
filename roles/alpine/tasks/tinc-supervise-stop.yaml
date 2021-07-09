@@ -1,7 +1,6 @@
-- name: stop tincd.{{tinc_netname}} service
+- name: stop tincd.{{ tinc_netname }} service
   become: true
   service:
-    name: tincd.{{tinc_netname}}
+    name: tincd.{{ tinc_netname }}
     state: stopped
     enabled: false
-

@@ -1,5 +1,5 @@
-- name: "{{service}} | restart"
+- name: "{{ service }} | restart"
   become: true
   service:
-    name: "{{service}}"
+    name: "{{ service }}"
     state: restarted

@@ -3,11 +3,11 @@
 - name: n2n edge | conf
   become: true
   copy:
-    dest: '{{edge.conf}}'
+    dest: '{{ edge.conf }}'
     content: |
-      --tun-device={{edge.netname|default(edge.instance)}}
-      --community={{edge.community}}
-      -k={{edge.password}}
-      -a={{edge.address}}
-      -s={{edge.netmask}}
-      --supernode-list={{edge.supernodes}}
+      --tun-device={{ edge.netname|default(edge.instance) }}
+      --community={{ edge.community }}
+      -k={{ edge.password }}
+      -a={{ edge.address }}
+      -s={{ edge.netmask }}
+      --supernode-list={{ edge.supernodes }}

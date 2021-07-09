@@ -1,11 +1,11 @@
 - name: install qemu
   apk:
-    name: "{{item}}"
+    name: "{{ item }}"
   loop:
-  - qemu
-  - qemu-system-x86_64
-  - qemu-ui-curses
-  - qemu-img
+    - qemu
+    - qemu-system-x86_64
+    - qemu-ui-curses
+    - qemu-img
 
 # - name: create qemu user
 #   user:

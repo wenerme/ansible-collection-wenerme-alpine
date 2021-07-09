@@ -1,12 +1,12 @@
 - include_tasks: tinc-preset.yaml
 
-- name: add /etc/monit.d/tinc for {{tinc_netname}}
+- name: add /etc/monit.d/tinc for {{ tinc_netname }}
   become: true
   copy:
     dest: /etc/monit.d/tinc
     mode: "0700"
     content: |
-      check process tincd with pidfile /run/tinc.{{tinc_netname}}.pid
+      check process tincd with pidfile /run/tinc.{{ tinc_netname }}.pid
         stop program = "/sbin/rc-service tincd stop"
         start program = "/sbin/rc-service tincd restart"
         if 5  restarts within 10 cycles then alert

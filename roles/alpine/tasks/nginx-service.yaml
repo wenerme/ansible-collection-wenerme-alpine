@@ -1,4 +1,3 @@
-
 - include_tasks: nginx-install.yaml
 
 - include_tasks: nginx-conf-sync.yaml

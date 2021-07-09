@@ -2,6 +2,7 @@
   become: true
   copy:
     dest: /etc/haproxy/haproxy.cfg
-    content: "{{haproxy_conf_inline}}"
+    content: "{{ haproxy_conf_inline }}"
+    mode: preserve
   when: haproxy_conf_inline is defined
   notify: haproxy-reload

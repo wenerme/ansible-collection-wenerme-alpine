@@ -1,11 +1,11 @@
 - name: avahi | install
   become: true
   package:
-    name: "{{item}}"
+    name: "{{ item }}"
     state: present
   loop:
-  - avahi
-  - avahi-tools
+    - avahi
+    - avahi-tools
 
 # dependency
 - import_tasks: dbus-service.yaml

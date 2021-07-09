@@ -1,21 +1,21 @@
 - name: k3s | install deps
   become: true
   package:
-    name: "{{item}}"
+    name: "{{ item }}"
     state: present
   loop:
-  - conntrack-tools
-  - containerd
-  - coreutils
-  - dbus
-  - findutils
-  - ipset
-  - iptables
-  - musl
-  - socat
-  - iproute2
-  - cni-plugins
-  - nfs-utils
+    - conntrack-tools
+    - containerd
+    - coreutils
+    - dbus
+    - findutils
+    - ipset
+    - iptables
+    - musl
+    - socat
+    - iproute2
+    - cni-plugins
+    - nfs-utils
 
 # < v3.13
 # - name: k3s | install cni-plugins

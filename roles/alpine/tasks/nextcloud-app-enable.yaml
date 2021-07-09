@@ -1,8 +1,8 @@
 - include_tasks: nextcloud-preset.yaml
   when: nextcloud_preset is undefined
 
-- name: Nextcloud | {{nextcloud_app_name}} app:enable
-  shell: ./occ app:enable {{nextcloud_app_name}} | grep already > /dev/null || echo -n 1
+- name: Nextcloud | {{ nextcloud_app_name }} app:enable
+  shell: ./occ app:enable {{ nextcloud_app_name }} | grep already > /dev/null || echo -n 1
   become: true
   become_user: www-data
   register: shell_result

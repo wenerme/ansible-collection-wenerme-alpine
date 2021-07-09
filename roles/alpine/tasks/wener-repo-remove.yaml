@@ -1,14 +1,14 @@
 - name: delete pubkey
   become: true
   file:
-    path: '{{item}}'
+    path: "{{ item }}"
     state: absent
   loop:
-  - /etc/apk/keys/wenermail@gmail.com-59b89cee.rsa.pub
+    - /etc/apk/keys/wenermail@gmail.com-59b89cee.rsa.pub
 
 - name: remove repo
   become: true
   lineinfile:
     path: /etc/apk/repositories
-    regex: '^https://repo.wener.me/alpine'
+    regex: "^https://repo.wener.me/alpine"
     state: absent

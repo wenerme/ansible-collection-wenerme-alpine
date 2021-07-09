@@ -1,26 +1,27 @@
 - name: install packages
   become: true
   apk:
-    name: '{{item}}'
+    name: '{{ item }}'
   loop:
-  - iproute2
-  - bridge
-  - iptables
+    - iproute2
+    - bridge
+    - iptables
 
 - name: setup interface
   set_fact:
-    gateway_interface: "{{gateway_interface|default('eth0')}}"
-    gateway_source: "{{gateway_source|default('0.0.0.0/0')}}"
-    gateway_persist: "{{gateway_persist|default(true)}}"
+    gateway_interface: "{{ gateway_interface|default('eth0') }}"
+    gateway_source: "{{ gateway_source|default('0.0.0.0/0') }}"
+    gateway_persist: "{{ gateway_persist|default(true) }}"
 
 - name: sysctl conf
   become: true
   sysctl:
-    name: "{{item.name}}"
-    value: "{{item.value}}"
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
     state: present
   loop:
-    - {name: net.ipv4.ip_forward, value: 1}
+    - name: net.ipv4.ip_forward
+      value: 1
 
 # iptables -I FORWARD -i eth0 -j ACCEPT
 # iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
@@ -28,8 +29,8 @@
 - name: enable forward
   become: true
   iptables:
-    in_interface: "{{gateway_interface}}"
-    source: "{{gateway_source}}"
+    in_interface: "{{ gateway_interface }}"
+    source: "{{ gateway_source }}"
     action: insert
     chain: FORWARD
     jump: ACCEPT
@@ -37,8 +38,8 @@
 - name: enable nat
   become: true
   iptables:
-    out_interface: "{{gateway_interface}}"
-    source: "{{gateway_source}}"
+    out_interface: "{{ gateway_interface }}"
+    source: "{{ gateway_source }}"
     action: append
     table: nat
     chain: POSTROUTING
@@ -48,9 +49,9 @@
   become: true
   interfaces_file:
     dest: /etc/network/interfaces
-    iface: "{{gateway_interface}}"
+    iface: "{{ gateway_interface }}"
     option: post-up
-    value: iptables -I FORWARD -i {{gateway_interface}} -s {{gateway_source}} -j ACCEPT
+    value: iptables -I FORWARD -i {{ gateway_interface }} -s {{ gateway_source }} -j ACCEPT
     state: present
   when: gateway_persist
 
@@ -58,8 +59,8 @@
   become: true
   interfaces_file:
     dest: /etc/network/interfaces
-    iface: "{{gateway_interface}}"
+    iface: "{{ gateway_interface }}"
     option: post-up
-    value: iptables -t nat -A POSTROUTING -o {{gateway_interface}} -s {{gateway_source}} -j MASQUERADE
+    value: iptables -t nat -A POSTROUTING -o {{ gateway_interface }} -s {{ gateway_source }} -j MASQUERADE
     state: present
   when: gateway_persist

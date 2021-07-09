@@ -1,13 +1,15 @@
 - name: Hots Info
   hosts: all
   collections:
-  - wenerme.alpine
+    - wenerme.alpine
   gather_facts: true
   tasks:
-  - include_role:
-      name: alpine
-      tasks_from: ensure-python
-    when: ansible_os_family == "Alpine"
-  - import_role:
-      name: alpine
-      tasks_from: host-info
+    - include_role:
+        name: alpine
+        tasks_from: ensure-python
+      when: ansible_os_family == "Alpine"
+      name: host-info | ensure-python
+    - import_role:
+        name: alpine
+        tasks_from: host-info
+      name: host-info | run role task

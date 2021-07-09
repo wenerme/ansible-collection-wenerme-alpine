@@ -3,17 +3,17 @@
   vars_prompt:
     - name: ssh_pub_key_file
       prompt: "Where is your ssh pub key file?"
-      private: no
+      private: false
       default: "{{ lookup('env','HOME') + '/.ssh/id_rsa.pub' }}"
     - name: remote_user
-      promot: "Which user you want to add to?"
-      private: no
-      default: "{{ansible_user|default('admin')}}"
+      prompt: "Which user you want to add to?"
+      private: false
+      default: "{{ ansible_user|default('admin') }}"
 
   tasks:
-  - name: Set authorized key taken from file
-    become: "{{remote_user != ansible_user}}"
-    authorized_key:
-      user: "{{remote_user}}"
-      state: present
-      key: "{{ lookup('file', ssh_pub_key_file) }}"
+    - name: Set authorized key taken from file
+      become: "{{ remote_user != ansible_user }}"
+      authorized_key:
+        user: "{{ remote_user }}"
+        state: present
+        key: "{{ lookup('file', ssh_pub_key_file) }}"

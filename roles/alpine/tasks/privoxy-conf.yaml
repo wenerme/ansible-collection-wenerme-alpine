@@ -2,6 +2,6 @@
   become: true
   copy:
     dest: /etc/privoxy/config
-    content: "{{privoxy_conf_inline}}"
+    content: "{{ privoxy_conf_inline }}"
   when: privoxy_conf_inline is defined
   notify: privoxy-reload

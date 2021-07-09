@@ -1,4 +1,5 @@
 - name: ZeroTier | leave
   become: true
-  command: zerotier-cli leave {{zerotier_network_id}}
-  # when: zerotier_network_id is defined
+  command: zerotier-cli leave {{ zerotier_network_id }}
+  # TODO
+  changed_when: false

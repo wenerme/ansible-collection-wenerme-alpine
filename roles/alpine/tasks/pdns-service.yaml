@@ -1,11 +1,11 @@
 - name: install pdns packages
   become: true
   apk:
-    name: "{{item}}"
+    name: "{{ item }}"
   loop:
-  - pdns
-  - pdns-tools
-  - pdns-openrc
+    - pdns
+    - pdns-tools
+    - pdns-openrc
 
 - name: sync conf
   include_tasks: "pdns-conf-sync.yaml"

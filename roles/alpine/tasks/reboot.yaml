@@ -4,3 +4,6 @@
 - name: rebooting
   become: true
   raw: reboot
+  # TODO
+  changed_when: false
+

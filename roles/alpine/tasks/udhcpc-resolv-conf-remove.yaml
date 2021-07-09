@@ -3,6 +3,7 @@
   file:
     path: /etc/udhcpc
     state: directory
+    mode: 0755
 
 - name: remove RESOLV_CONF
   become: true
@@ -10,3 +11,4 @@
     path: /etc/udhcpc/udhcpc.conf
     regex: '^\s*RESOLV_CONF'
     state: absent
+    mode: 0644

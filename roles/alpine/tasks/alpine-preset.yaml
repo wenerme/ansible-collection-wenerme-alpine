@@ -15,18 +15,18 @@
 
 - name: set version
   set_fact:
-    alpine_version: "{{slurp_result.content | b64decode | regex_search('^[0-9]+[.][0-9]+')}}"
-    alpine_major_version: "{{slurp_result.content | b64decode | regex_search('^[0-9]+[.][0-9]+')}}"
-    alpine_full_version: "{{slurp_result.content | b64decode | regex_search('^[^\n\r]+')}}"
-    alpine_arch: "{{arch_result.stdout}}"
-    linux_kernel_flavor: "{{flavor_result.stdout}}"
+    alpine_version: "{{ slurp_result.content | b64decode | regex_search('^[0-9]+[.][0-9]+') }}"
+    alpine_major_version: "{{ slurp_result.content | b64decode | regex_search('^[0-9]+[.][0-9]+') }}"
+    alpine_full_version: "{{ slurp_result.content | b64decode | regex_search('^[^\n\r]+') }}"
+    alpine_arch: "{{ arch_result.stdout }}"
+    linux_kernel_flavor: "{{ flavor_result.stdout }}"
 
 - name: debug alpine-preset
   debug:
     msg:
-    - "Alpine Full Version: {{alpine_full_version}}"
-    - "Alpine Major Version: {{alpine_major_version}}"
-    - "Apk Arch: {{alpine_arch}}"
-    - "Kernel Flavor: {{linux_kernel_flavor}}"
+      - "Alpine Full Version: {{ alpine_full_version }}"
+      - "Alpine Major Version: {{ alpine_major_version }}"
+      - "Apk Arch: {{ alpine_arch }}"
+      - "Kernel Flavor: {{ linux_kernel_flavor }}"
   tags:
-  - debug
+    - debug

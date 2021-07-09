@@ -11,18 +11,18 @@
 - name: ip route add
   shell: >-
     [
-    0 = $(ip route show {{prefix}} | wc -l)
+    0 = $(ip route show {{ prefix }} | wc -l)
     ] && (
-    {{'echo ' if dry_run is defined else ''}}
+    {{ 'echo ' if dry_run is defined else '' }}
     ip route add
-    to {{type if type is defined else 'unicast'}} {{prefix}}
-    {{'tos '+tos if tos is defined else ""}}
-    {{"metric "+metric if metric is defined else ""}}
-    {{"table "+table if table is defined else ""}}
-    via {{via}}
-    {{'dev '+device if device is defined else ""}}
-    {{"src "+source_address if source_address is defined else ""}}
-    {{'>&2 ' if dry_run is defined else ''}}
+    to {{ type if type is defined else 'unicast' }} {{ prefix }}
+    {{ 'tos '+tos if tos is defined else "" }}
+    {{ "metric "+metric if metric is defined else "" }}
+    {{ "table "+table if table is defined else "" }}
+    via {{ via }}
+    {{ 'dev '+device if device is defined else "" }}
+    {{ "src "+source_address if source_address is defined else "" }}
+    {{ '>&2 ' if dry_run is defined else '' }}
     ; echo -n 0
     ) || echo -n 1
   register: shell_out
@@ -31,6 +31,5 @@
 
 - name: dry run command
   debug:
-    msg: "{{shell_out.stderr}}"
+    msg: "{{ shell_out.stderr }}"
   when: dry_run is defined
-

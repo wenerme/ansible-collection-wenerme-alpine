@@ -1,6 +1,6 @@
 - name: nfs install
   become: true
   apk:
-    name: "{{item}}"
+    name: "{{ item }}"
   loop:
-  - nfs-utils
+    - nfs-utils

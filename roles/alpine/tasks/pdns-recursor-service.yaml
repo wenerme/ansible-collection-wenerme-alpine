@@ -1,10 +1,10 @@
 - name: install pdns-recursor packages
   become: true
   apk:
-    name: "{{item}}"
+    name: "{{ item }}"
   loop:
-  - pdns-recursor
-  - pdns-recursor-openrc
+    - pdns-recursor
+    - pdns-recursor-openrc
 
 - include_tasks: pdns-recursor-conf-sync.yaml
 

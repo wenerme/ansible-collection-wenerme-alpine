@@ -1,10 +1,10 @@
 - name: install packages for managed
   become: true
   apk:
-    name: "{{item}}"
+    name: "{{ item }}"
   loop:
-  - file
-  - tree
-  - rsync
-  - util-linux
-  - openssl
+    - file
+    - tree
+    - rsync
+    - util-linux
+    - openssl

@@ -10,10 +10,10 @@
 
     - name: set local download path
       set_fact:
-        nextcloud_download_path: files/nextcloud/{{nextcloud_version}}
+        nextcloud_download_path: files/nextcloud/{{ nextcloud_version }}
     - name: set apps.json path
       set_fact:
-        nextcloud_apps_json: "{{nextcloud_download_path}}/apps.json"
+        nextcloud_apps_json: "{{ nextcloud_download_path }}/apps.json"
     - name: done preset
       set_fact:
         nextcloud_preset: true
@@ -21,22 +21,22 @@
 
 - name: Load Nextcloud Apps
   block:
-  - name: prepare local directory
-    delegate_to: localhost
-    file:
-      path: "{{nextcloud_download_path}}"
-      state: directory
+    - name: prepare local directory
+      delegate_to: localhost
+      file:
+        path: "{{ nextcloud_download_path }}"
+        state: directory
 
-  - name: download app list
-    delegate_to: localhost
-    get_url:
-      dest: "{{nextcloud_apps_json}}"
-      url: https://apps.nextcloud.com/api/v1/platform/{{nextcloud_version}}/apps.json
-      use_proxy: yes
-    when: not (nextcloud_apps_json is file)
+    - name: download app list
+      delegate_to: localhost
+      get_url:
+        dest: "{{ nextcloud_apps_json }}"
+        url: https://apps.nextcloud.com/api/v1/platform/{{ nextcloud_version }}/apps.json
+        use_proxy: yes
+      when: not (nextcloud_apps_json is file)
 
-  - set_fact:
-      nextcloud_apps: "{{lookup('file',nextcloud_apps_json)|from_json}}"
-    # delegate_to: localhost
+    - set_fact:
+        nextcloud_apps: "{{ lookup('file',nextcloud_apps_json)|from_json }}"
+      # delegate_to: localhost
   #
   when: nextcloud_apps is undefined

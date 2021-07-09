@@ -3,6 +3,7 @@
   file:
     path: /etc/udhcpc
     state: directory
+    mode: 0755
 
 - name: disable RESOLV_CONF
   become: true
@@ -11,3 +12,4 @@
     line: RESOLV_CONF=no
     create: true
     regex: '^\s*RESOLV_CONF'
+    mode: 0644

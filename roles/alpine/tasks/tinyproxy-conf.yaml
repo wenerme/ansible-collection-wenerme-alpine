@@ -2,6 +2,7 @@
   become: true
   copy:
     dest: /etc/tinyproxy/tinyproxy.conf
-    content: "{{tinyproxy_conf_inline}}"
+    content: "{{ tinyproxy_conf_inline }}"
+    mode: 0644
   when: tinyproxy_conf_inline is defined
   notify: tinyproxy-reload

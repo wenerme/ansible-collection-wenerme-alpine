@@ -1,11 +1,11 @@
 - name: haproxy | install
   become: true
   apk:
-    name: "{{item}}"
+    name: "{{ item }}"
     # support metrcs
     repository: https://mirrors.aliyun.com/alpine/edge/main/
   loop:
-  - haproxy
+    - haproxy
 
 - import_tasks: haproxy-conf.yaml
 

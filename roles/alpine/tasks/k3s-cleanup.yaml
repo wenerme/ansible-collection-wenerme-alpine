@@ -1,15 +1,15 @@
 - name: k3s | cleanup
   become: true
   file:
-    path: "{{item}}"
+    path: "{{ item }}"
     state: absent
   loop:
-  - /var/lib/rancher/k3s
-  - /etc/rancher/k3s/k3s.yaml
-  - /var/lib/kubelet
-  - /var/log/containers
-  - /var/log/pods
-  - /var/log/k3s.log
-  # ip li del cni0
-  # ip li del flannel.1
-  - /var/lib/cni
+    - /var/lib/rancher/k3s
+    - /etc/rancher/k3s/k3s.yaml
+    - /var/lib/kubelet
+    - /var/log/containers
+    - /var/log/pods
+    - /var/log/k3s.log
+    # ip li del cni0
+    # ip li del flannel.1
+    - /var/lib/cni

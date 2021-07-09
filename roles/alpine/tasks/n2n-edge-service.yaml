@@ -3,16 +3,16 @@
 - name: n2n edge | load modules
   become: true
   modprobe:
-    name: "{{item}}"
+    name: "{{ item }}"
     state: present
   loop: &modules
-  - tun
+    - tun
 
 - name: n2n edge | persist mpdules
   become: true
   lineinfile:
     path: /etc/modules-load.d/n2n-edge.conf
-    line: "{{item}}"
+    line: "{{ item }}"
     create: true
   loop: *modules
 
@@ -28,14 +28,14 @@
   become: true
   file:
     src: /etc/init.d/edge
-    dest: /etc/init.d/edge.{{edge.instance}}
+    dest: /etc/init.d/edge.{{ edge.instance }}
     state: link
   when: edge.instance is defined
 
 - name: n2n edge | start instance service
   become: true
   service:
-    name: edge.{{edge.instance}}
+    name: edge.{{ edge.instance }}
     state: started
     enabled: true
   when: edge.instance is defined

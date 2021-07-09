@@ -2,11 +2,11 @@
   become: true
   lineinfile:
     path: /etc/conf.d/tinc.networks
-    line: 'NETWORK: {{tinc_netname}}'
-    regex: '^[^#]*?{{tinc_netname}}'
+    line: "NETWORK: {{ tinc_netname }}"
+    regex: "^[^#]*?{{ tinc_netname }}"
   notify: tinc-restart
   when:
-  - not ('/etc/init.d/tincd.{{tinc_netname}}' is file)
+    - not ('/etc/init.d/tincd.{{ tinc_netname }}' is file)
 
 - name: enable tinc service
   become: true
@@ -15,12 +15,12 @@
     state: started
     enabled: true
   when:
-  - not ('/etc/init.d/tincd.{{tinc_netname}}' is file)
+    - not ('/etc/init.d/tincd.{{ tinc_netname }}' is file)
 
-- include_tasks: tinc-service-disable.yaml
+- include_tasks: tincd-service-disable.yaml
   when:
-  - "'/etc/init.d/tincd.{{tinc_netname}}' is file"
+    - "'/etc/init.d/tincd.{{ tinc_netname }}' is file"
 
 - include_tasks: tinc-supervise-start.yaml
   when:
-  - "'/etc/init.d/tincd.{{tinc_netname}}' is file"
+    - "'/etc/init.d/tincd.{{ tinc_netname }}' is file"

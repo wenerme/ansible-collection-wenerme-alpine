@@ -1,17 +1,17 @@
 - name: docker | install
   become: true
   package:
-    name: "{{item}}"
+    name: "{{ item }}"
     state: present
   loop:
-  - docker
-  # for ansbile docker module
-  - py3-dockerpty
+    - docker
+    # for ansbile docker module
+    - py3-dockerpty
 
 - name: docker | add admin to docker group
   become: true
   user:
     name: admin
     groups:
-    - docker
-    append: yes
+      - docker
+    append: true

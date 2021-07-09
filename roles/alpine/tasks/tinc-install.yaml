@@ -6,16 +6,16 @@
 - name: tinc | load modules
   become: true
   modprobe:
-    name: "{{item}}"
+    name: "{{ item }}"
     state: present
   loop: &modules
-  - tun
+    - tun
 
 - name: tinc | persist mpdules
   become: true
   lineinfile:
     path: /etc/modules-load.d/tinc.conf
-    line: "{{item}}"
+    line: "{{ item }}"
     create: true
+    mode: 0644
   loop: *modules
-

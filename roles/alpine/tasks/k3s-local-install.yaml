@@ -17,7 +17,7 @@
 
 - name: send
   synchronize:
-    src: "{{k3s_local_path}}/"
+    src: "{{ k3s_local_path }}/"
     dest: "/opt/k3s/"
     owner: no
     group: no
@@ -26,7 +26,7 @@
 # - name: chmod
 #   become: true
 #   file:
-#     path: /opt/k3s/{{item}}
+#     path: /opt/k3s/{{ item }}
 #     mode: +x
 #   loop:
 #   - k3s
@@ -48,7 +48,7 @@
 #   become: true
 #   file:
 #     src: /usr/local/bin/k3s
-#     dest: /usr/local/bin/{{item}}
+#     dest: /usr/local/bin/{{ item }}
 #     state: link
 #     # mode: +x
 #   loop:
@@ -62,9 +62,9 @@
     env
     INSTALL_K3S_SKIP_DOWNLOAD=true
     INSTALL_K3S_SKIP_ENABLE=true
-    INSTALL_K3S_VERSION={{k3s_version}}
+    INSTALL_K3S_VERSION={{ k3s_version }}
 
-    {{k3s_install_env|default('')}}
+    {{ k3s_install_env | default('') }}
 
     /opt/k3s/k3s-install.sh
-    {{k3s_install_options|default('')}}
+    {{ k3s_install_options | default('') }}

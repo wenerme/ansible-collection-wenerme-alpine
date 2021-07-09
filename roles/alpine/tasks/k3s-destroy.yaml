@@ -3,12 +3,12 @@
 - name: k3s | remove state
   become: true
   file:
-    path: "{{item}}"
+    path: "{{ item }}"
     state: absent
   loop:
-  - /etc/rancher/k3s
-  - /var/lib/kubelet
-  - /var/lib/rancher/k3s
-  - /run/k3s
-  - /run/flannel
+    - /etc/rancher/k3s
+    - /var/lib/kubelet
+    - /var/lib/rancher/k3s
+    - /run/k3s
+    - /run/flannel
 

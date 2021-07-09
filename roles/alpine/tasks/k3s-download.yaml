@@ -1,36 +1,37 @@
-- import_tasks: k3s-preset.yaml
+# - import_tasks: k3s-preset.yaml
 
 - name: prepare local cache dir
   delegate_to: localhost
   file:
-    path: "{{item}}"
+    path: "{{ item }}"
     state: directory
+    mode: 0644
   loop:
-  - "{{k3s_local_path}}"
+    - "{{ k3s_local_path }}"
 
 - name: download checksum
   delegate_to: localhost
   get_url:
-    dest: "{{k3s_local_path}}/sha256sum.txt"
-    url: "{{k3s_download_url}}/sha256sum-{{k3s_arch}}.txt"
-    # checksum: sha256:{{k3s_download_url}}/sha256sum-{{k3s_arch}}.txt
+    dest: "{{ k3s_local_path }}/sha256sum.txt"
+    url: "{{ k3s_download_url }}/sha256sum-{{ k3s_arch }}.txt"
+    # checksum: sha256:{{ k3s_download_url }}/sha256sum-{{ k3s_arch }}.txt
   when: "not ((k3s_local_path+'/sha256sum.txt') is file)"
 
-- name: download {{k3s_version}} from {{k3s_download_url}}
+- name: download {{ k3s_version }} from {{ k3s_download_url }}
   delegate_to: localhost
-  # shell: curl -sfLC- -o {{k3s_local_path}}/{{item}} {{k3s_download_url}}/{{item}}
+  # shell: curl -sfLC- -o {{ k3s_local_path }}/{{ item }} {{ k3s_download_url }}/{{ item }}
   get_url:
-    dest: "{{k3s_local_path}}/k3s"
-    url: "{{k3s_download_url}}/{{item}}"
-    # checksum: sha256:{{k3s_download_url}}/sha256sum-{{k3s_arch}}.txt
+    dest: "{{ k3s_local_path }}/k3s"
+    url: "{{ k3s_download_url }}/{{ item }}"
+    # checksum: sha256:{{ k3s_download_url }}/sha256sum-{{ k3s_arch }}.txt
     mode: "755"
   # when: not ((k3s_local_path+'/'+item) is file)
   loop:
-  - "{{'k3s' if k3s_arch == 'amd64' else 'k3s-'+k3s_arch }}"
+    - "{{'k3s' if k3s_arch == 'amd64' else 'k3s-'+k3s_arch }}"
 
 - name: download get.k3s.io
   delegate_to: localhost
   get_url:
-    dest: "{{k3s_local_path}}/k3s-install.sh"
+    dest: "{{ k3s_local_path }}/k3s-install.sh"
     url: https://get.k3s.io
     mode: "755"

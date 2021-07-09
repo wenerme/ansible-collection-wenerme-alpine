@@ -20,7 +20,7 @@
 - name: load modules
   become: true
   modprobe:
-    name: "{{item}}"
+    name: "{{ item }}"
     state: present
   loop: &modules
     - br_netfilter
@@ -60,27 +60,27 @@
   become: true
   lineinfile:
     path: /etc/modules-load.d/k8s.conf
-    line: "{{item}}"
+    line: "{{ item }}"
     create: true
   loop: *modules
 
 - name: sysctl conf
   become: true
   sysctl:
-    name: "{{item.name}}"
-    value: "{{item.value}}"
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
     state: present
   loop:
-    - {name: net.bridge.bridge-nf-call-iptables, value: 1}
-    - {name: net.ipv4.ip_forward, value: 1}
+    - { name: net.bridge.bridge-nf-call-iptables, value: 1 }
+    - { name: net.ipv4.ip_forward, value: 1 }
 
 # required by installer or somthing
 - name: sshd config
   become: true
   lineinfile:
     path: /etc/ssh/sshd_config
-    line: '{{item.name}} {{item.value}}'
-    regex: '^\s*{{item.name}}'
+    line: '{{ item.name }} {{ item.value }}'
+    regex: '^\s*{{ item.name }}'
     state: present
     insertbefore: '^\s*Match\s+'
     validate: sshd -T -C user=nobody -f %s

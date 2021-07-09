@@ -4,4 +4,4 @@
     name: local
     enabled: yes
   tags:
-  - service-enable
+    - service-enable

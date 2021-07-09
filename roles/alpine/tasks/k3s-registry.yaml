@@ -11,16 +11,16 @@
   become: true
   copy:
     dest: /etc/rancher/k3s/registries.yaml
-    content: "{{k3s_registry_inline | to_yaml}}"
+    content: "{{ k3s_registry_inline | to_yaml }}"
   when:
-  - k3s_registry_inline is defined
-  - k3s_registry_inline is mapping
+    - k3s_registry_inline is defined
+    - k3s_registry_inline is mapping
 
 - name: k3s | inline registry
   become: true
   copy:
     dest: /etc/rancher/k3s/registries.yaml
-    content: "{{k3s_registry_inline}}"
+    content: "{{ k3s_registry_inline }}"
   when:
-  - k3s_registry_inline is defined
-  - k3s_registry_inline is string
+    - k3s_registry_inline is defined
+    - k3s_registry_inline is string

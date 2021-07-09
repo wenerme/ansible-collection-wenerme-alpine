@@ -1,12 +1,12 @@
 - name: install nginx
   become: true
   apk:
-    name: "{{item}}"
+    name: "{{ item }}"
   loop:
-  - nginx
+    - nginx
 
 - name: install nginx modules
   become: true
   apk:
-    name: "nginx-mod-{{item}}"
-  loop: "{{nginx_install_modules|default(['stream'])}}"
+    name: "nginx-mod-{{ item }}"
+  loop: "{{ nginx_install_modules|default(['stream']) }}"

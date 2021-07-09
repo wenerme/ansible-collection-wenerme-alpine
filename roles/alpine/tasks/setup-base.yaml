@@ -4,21 +4,21 @@
 # --------------------
 - name: ensure sudo
   raw: "[ $(whoami) = root ] && apk add sudo"
-  changed_when: no
+  changed_when: false
 - name: install basic package
   become: true
   apk:
-    name: '{{item}}'
+    name: '{{ item }}'
   loop:
-  - nano
-  - curl
-  - shadow
-  - bash
-  - sudo
-  - busybox-extras
-  # scp
-  - openssh-client
-  - openssh-sftp-server
+    - nano
+    - curl
+    - shadow
+    - bash
+    - sudo
+    - busybox-extras
+    # scp
+    - openssh-client
+    - openssh-sftp-server
 
 # admin account
 # --------------------
@@ -32,7 +32,7 @@
     uid: '1000'
     state: present
     shell: /bin/bash
-    password_lock: no
+    password_lock: false
 - name: setup admin group
   become: true
   group:
@@ -77,18 +77,18 @@
 - name: copy root authorized_keys to admin
   become: true
   copy:
-      dest: /home/admin/.ssh/authorized_keys
-      src: /root/.ssh/authorized_keys
-      remote_src: yes
-      group: admin
-      owner: admin
-      mode: "0600"
+    dest: /home/admin/.ssh/authorized_keys
+    src: /root/.ssh/authorized_keys
+    remote_src: true
+    group: admin
+    owner: admin
+    mode: "0600"
   when: stat_result.stat.exists
 
-- name: check admin pubkey {{admin_pubkey_path}}
+- name: check admin pubkey {{ admin_pubkey_path }}
   delegate_to: localhost
   stat:
-    path: "{{admin_pubkey_path}}"
+    path: "{{ admin_pubkey_path }}"
   register: stat_result
   when: admin_pubkey_path is defined
 
@@ -111,21 +111,27 @@
   become: true
   lineinfile:
     path: /etc/ssh/sshd_config
-    line: '{{item.name}} {{item.value}}'
-    regex: '^\s*{{item.name}}'
+    line: '{{ item.name }} {{ item.value }}'
+    regex: '^\s*{{ item.name }}'
     state: present
     insertbefore: '^\s*Match\s+'
     validate: sshd -T -C user=nobody -f %s
   loop:
-  # no root login
-  - { name: PermitRootLogin, value: 'no' }
-  # no password
-  - { name: PasswordAuthentication, value: 'no' }
-  - { name: ChallengeResponseAuthentication, value: 'no' }
-  - { name: PermitEmptyPasswords, value: 'no' }
-  # pubkey only
-  - { name: AuthenticationMethods, value: 'publickey' }
-  - { name: PubkeyAuthentication, value: 'yes' }
+    # no root login
+    - name: PermitRootLogin
+      value: 'no'
+    # no password
+    - name: PasswordAuthentication
+      value: 'no'
+    - name: ChallengeResponseAuthentication
+      value: 'no'
+    - name: PermitEmptyPasswords
+      value: 'no'
+    # pubkey only
+    - name: AuthenticationMethods
+      value: 'publickey'
+    - name: PubkeyAuthentication
+      value: 'yes'
   # some warning
   # - { name: Banner, value: '/etc/issue' }
   # alpine has no pam by default
@@ -139,4 +145,5 @@
   copy:
     dest: /etc/motd
     src: files/motd.txt
+    mode: 0644
   when: "'files/motd.txt' is file"

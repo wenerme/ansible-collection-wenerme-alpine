@@ -2,16 +2,16 @@
   become: true
   lineinfile:
     path: /etc/apk/repositories
-    regex: '^[^#]*?{{alpine_mirror}}/v{{alpine_version}}/{{item}}'
+    regex: "^[^#]*?{{ alpine_mirror }}/v{{ alpine_version }}/{{ item }}"
     state: absent
   loop:
-  - main
-  - community
+    - main
+    - community
 
 - name: remove apk repo
   become: true
   lineinfile:
     path: /etc/apk/repositories
-    regex: '^[^#]*?{{apk_repo}}'
+    regex: "^[^#]*?{{ apk_repo }}"
     state: absent
   when: apk_repo is defined

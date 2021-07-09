@@ -1,7 +1,7 @@
 - name: setup k3s server env
   become: true
   copy:
-    content: "{{k3s_env}}"
+    content: "{{ k3s_env }}"
     dest: /etc/rancher/k3s/k3s.env
   when: k3s_env is defined
 

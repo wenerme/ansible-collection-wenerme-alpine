@@ -56,25 +56,25 @@
   become: true
   # service: name=tincd state=restarted
   # shell: |
-  #   [ -f /etc/init.d/tincd.{{tinc_netname}} ] &&
-  #   service tincd.{{tinc_netname}} ||
+  #   [ -f /etc/init.d/tincd.{{ tinc_netname }} ] &&
+  #   service tincd.{{ tinc_netname }} ||
   #   { tinc pid && tinc restart || tinc start; }
-  shell: service tincd.{{tinc_netname}} --ifstarted restart
+  command: service tincd.{{ tinc_netname }} --ifstarted restart
   environment:
-    NETNAME: "{{tinc_netname}}"
+    NETNAME: "{{ tinc_netname }}"
 - name: tinc-reload
   become: true
   # service: name=tincd state=reloaded
-  # shell: tinc -n {{tinc_netname}} reload
-  shell: service tincd.{{tinc_netname}} --ifstarted restart
+  # shell: tinc -n {{ tinc_netname }} reload
+  command: service tincd.{{ tinc_netname }} --ifstarted restart
 
 # not working
-# - name: tinc-restart-{{tinc_netname}}
+# - name: tinc-restart-{{ tinc_netname }}
 #   become: true
-#   shell: tinc -n {{tinc_netname}} restart
+#   shell: tinc -n {{ tinc_netname }} restart
 # - name: tinc-reload
 #   become: true
-#   shell: tinc -n {{tinc_netname}} reload
+#   shell: tinc -n {{ tinc_netname }} reload
 
 - name: traefik-restart
   become: true
@@ -136,15 +136,15 @@
 
 - name: sockd-reload
   become: true
-  shell: service sockd --ifstarted restart
+  command: service sockd --ifstarted restart
 
 - name: privoxy-reload
   become: true
-  shell: service privoxy --ifstarted restart
+  command: service privoxy --ifstarted restart
 - name: tinyproxy-reload
   become: true
-  shell: service tinyproxy --ifstarted restart
+  command: service tinyproxy --ifstarted restart
 
 - name: k3s-restart
   become: true
-  shell: service k3s --ifstarted restart
+  command: service k3s --ifstarted restart

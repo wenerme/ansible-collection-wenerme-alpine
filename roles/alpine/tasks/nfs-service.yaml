@@ -3,21 +3,21 @@
 - name: nfs start
   become: true
   service:
-    name: "{{item}}"
+    name: "{{ item }}"
     state: started
   loop:
-  - nfs
-  - nfsmount
+    - nfs
+    - nfsmount
   tags:
-  - service-start
+    - service-start
 
 - name: nfs enable
   become: true
   service:
-    name: "{{item}}"
+    name: "{{ item }}"
     enabled: true
   loop:
-  - nfs
-  - nfsmount
+    - nfs
+    - nfsmount
   tags:
-  - service-enable
+    - service-enable

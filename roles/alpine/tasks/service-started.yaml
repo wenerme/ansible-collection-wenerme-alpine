@@ -1,9 +1,9 @@
-- name: check service {{service_name}} started
-  shell: service {{service_name}} status | grep -q started && echo -n 1 || echo -n 0
+- name: check service {{ service_name }} started
+  shell: service {{ service_name }} status | grep -q started && echo -n 1 || echo -n 0
   register: shell_result
-  changed_when: no
+  changed_when: false
 
-- name: "service {{service_name}} status: {{'started' if shell_result.stdout == '1' else 'stopped'}}"
+- name: "service {{ service_name }} status: {{ 'started' if shell_result.stdout == '1' else 'stopped' }}"
   set_fact:
-    service_started: "{{true if shell_result.stdout == '1' else false}}"
-  changed_when: no
+    service_started: "{{ true if shell_result.stdout == '1' else false }}"
+  changed_when: false

@@ -1,8 +1,7 @@
-
 - name: install package for phy node
   become: true
   apk:
-    name: '{{item}}'
+    name: '{{ item }}'
   loop:
     # system
     - util-linux

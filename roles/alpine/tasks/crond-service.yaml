@@ -1,4 +1,3 @@
-
 - name: crond | start
   become: true
   service:

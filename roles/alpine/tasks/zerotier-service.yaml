@@ -16,17 +16,18 @@
 - name: ZeroTier | load modules
   become: true
   modprobe:
-    name: "{{item}}"
+    name: "{{ item }}"
     state: present
   loop: &modules
-  - tun
+    - tun
 
 - name: ZeroTier | persist mpdules
   become: true
   lineinfile:
     path: /etc/modules-load.d/zerotier.conf
-    line: "{{item}}"
+    line: "{{ item }}"
     create: true
+    mode: 0644
   loop: *modules
 
 - name: ZeroTier | install
@@ -40,12 +41,13 @@
   lineinfile:
     create: true
     path: /var/lib/zerotier-one/devicemap
-    line: '{{zerotier_network_id}}={{zerotier_network_name}}'
-    regex: '^{{zerotier_network_id}}'
+    line: "{{ zerotier_network_id }}={{ zerotier_network_name }}"
+    regex: "^{{ zerotier_network_id }}"
     state: present
+    mode: 0644
   when:
-  - zerotier_network_id is defined
-  - zerotier_network_name is defined
+    - zerotier_network_id is defined
+    - zerotier_network_name is defined
 
 - name: ZeroTier | start
   become: true
@@ -54,7 +56,7 @@
     enabled: true
     state: started
 
-- name: ZeroTier | join {{zerotier_network_name|default(zerotier_network_id)}}
+- name: ZeroTier | join {{ zerotier_network_name | default(zerotier_network_id) }}
   become: true
-  command: zerotier-cli join {{zerotier_network_id}}
+  command: zerotier-cli join {{ zerotier_network_id }}
   when: zerotier_network_id is defined

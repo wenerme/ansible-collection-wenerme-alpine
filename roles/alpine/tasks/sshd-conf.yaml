@@ -2,11 +2,11 @@
   become: true
   lineinfile:
     path: /etc/ssh/sshd_config
-    line: '{{item.name}} {{item.value}}'
-    regex: '^\s*{{item.name}}'
+    line: '{{ item.name }} {{ item.value }}'
+    regex: '^\s*{{ item.name }}'
     state: present
     insertbefore: '^\s*Match\s+'
     validate: sshd -T -C user=nobody -f %s
-  with_items: "{{sshd_conf}}"
+  with_items: "{{ sshd_conf }}"
   notify: sshd-restart
   when: sshd_conf is defined

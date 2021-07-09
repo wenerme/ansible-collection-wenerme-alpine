@@ -1,7 +1,7 @@
 - name: consul install
   become: true
   apk:
-    name: "{{item}}"
+    name: "{{ item }}"
   loop:
     - consul
 

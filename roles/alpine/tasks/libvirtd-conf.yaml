@@ -1,18 +1,17 @@
-
 - name: update libvirtd.conf
   become: true
   lineinfile:
     path: /etc/libvirt/libvirtd.conf
-    # line: '{{item.name}}={{item.value is number | ternery(item.value, item.value)}}'
+    # line: '{{ item.name }}={{ item.value is number | ternery(item.value, item.value) }}'
     line: >-
-      {{item.name}}={{item.value is number | ternary(item.value, '"'+(item.value|string)+'"')}}
-    regex: '^\s*#?\s*{{item.name}}\s*='
+      {{ item.name }}={{ item.value is number | ternary(item.value, '"'+(item.value|string)+'"') }}
+    regex: '^\s*#?\s*{{ item.name }}\s*='
   loop:
-  # - { name: audit_level, value: 2 }
-  - { name: log_level, value: 3 }
-  # allowed libvirt group
-  - { name: unix_sock_group, value: libvirt }
-  - { name: unix_sock_rw_perms, value: "0770" }
+    # - { name: audit_level, value: 2 }
+    - { name: log_level, value: 3 }
+    # allowed libvirt group
+    - { name: unix_sock_group, value: libvirt }
+    - { name: unix_sock_rw_perms, value: "0770" }
   notify: libvirtd-reload
 
 - name: update /etc/conf.d/libvirtd
@@ -20,8 +19,8 @@
   lineinfile:
     path: /etc/conf.d/libvirtd
     line: >-
-      {{item.name}}={{item.value is number | ternary(item.value, '"'+(item.value|string)+'"')}}
-    regex: '^\s*#?\s*{{item.name}}\s*='
+      {{ item.name }}={{ item.value is number | ternary(item.value, '"'+(item.value|string)+'"') }}
+    regex: '^\s*#?\s*{{ item.name }}\s*='
   loop:
-  - { name: LIBVIRTD_KVM_SHUTDOWN, value: shutdown }
-  - { name: LIBVIRTD_KVM_SHUTDOWN_MAXWAIT, value: "300" }
+    - { name: LIBVIRTD_KVM_SHUTDOWN, value: shutdown }
+    - { name: LIBVIRTD_KVM_SHUTDOWN_MAXWAIT, value: "300" }
