@@ -1,0 +1,24 @@
+- import_tasks: n2n-edge-preset.yaml
+
+- name: n2n edge | stop service
+  become: true
+  service:
+    name: edge
+    state: stopped
+    enabled: false
+  when: edge.instance is undefined
+
+- name: n2n edge | stop instance service
+  become: true
+  service:
+    name: edge.{{edge.instance}}
+    state: stopped
+    enabled: false
+  when: edge.instance is defined
+
+- name: n2n edge | unlink instance
+  become: true
+  file:
+    path: /etc/init.d/edge.{{edge.instance}}
+    state: absent
+  when: edge.instance is defined

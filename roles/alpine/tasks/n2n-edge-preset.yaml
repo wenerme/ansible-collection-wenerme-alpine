@@ -1,0 +1,18 @@
+- name: n2n edge | set instance
+  set_fact:
+    edge: "{{edge | combine({'instance': (edge.netname | default(edge.community))})}}"
+  when:
+  - edge.instance is undefined
+
+- name: n2n edge | conf file
+  set_fact:
+    edge: "{{edge | combine({'conf': '/etc/n2n/edge-'+edge.instance+'.conf'})}}"
+  when:
+  - edge.conf is undefined
+  - edge.instance is defined
+
+- name: n2n edge | default conf file
+  set_fact:
+    edge: "{{edge | combine({'conf': '/etc/n2n/edge.conf'})}}"
+  when:
+  - edge.conf is undefined

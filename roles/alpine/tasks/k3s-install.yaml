@@ -15,6 +15,7 @@
   - socat
   - iproute2
   - cni-plugins
+  - nfs-utils
 
 # < v3.13
 # - name: k3s | install cni-plugins

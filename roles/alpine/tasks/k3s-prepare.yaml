@@ -1,30 +1,61 @@
 # - import_tasks: k3s-preset.yaml
 
-- name: check update-extlinux.conf exists
+- name: k3s prepare | extlinux check
   stat:
     path: /etc/update-extlinux.conf
   register: stat
 
-- name: check kernel params
-  become: true
-  lineinfile:
-    path: /etc/update-extlinux.conf
-    backrefs: yes
-    regexp: '^default_kernel_opts="[^"]*cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory[^"]*"'
-    state: absent
-  check_mode: yes
-  register: lineinfile
-  changed_when: false
+- name: k3s prepare | extlinux cgroup params
+  block:
+    - name: extlinux | check param exists
+      become: true
+      lineinfile:
+        path: /etc/update-extlinux.conf
+        backrefs: yes
+        regexp: '^default_kernel_opts="[^"]*cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory[^"]*"'
+        state: absent
+      check_mode: yes
+      register: lineinfile
+      changed_when: false
+    - name: extlinux | add cgroup kernel params
+      become: true
+      lineinfile:
+        path: /etc/update-extlinux.conf
+        backrefs: yes
+        regexp: '^default_kernel_opts="([^""]*)"'
+        line: 'default_kernel_opts="\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory"'
+      when: lineinfile.found is defined and not lineinfile.found
+    # todo update
   when: stat.stat.exists
 
-- name: add cgroup kernel params
-  become: true
-  lineinfile:
-    path: /etc/update-extlinux.conf
-    backrefs: yes
-    regexp: '^default_kernel_opts="([^""]*)"'
-    line: 'default_kernel_opts="\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory"'
-  when: lineinfile.found is defined and not lineinfile.found
+
+- name: k3s prepare | grub check
+  stat:
+    path: /etc/default/grub
+  register: stat
+- name: k3s prepare | grub cgroup params
+  block:
+    - name: grub | check param exists
+      become: true
+      lineinfile:
+        path: /etc/default/grub
+        backrefs: yes
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="[^"]*cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory[^"]*"'
+        state: absent
+      check_mode: yes
+      register: lineinfile
+      changed_when: false
+    - name: grub | add cgroup kernel params
+      become: true
+      lineinfile:
+        path: /etc/default/grub
+        backrefs: yes
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="([^""]*)"'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory"'
+      when: lineinfile.found is defined and not lineinfile.found
+    # todo grub-mkconfig -o /boot/grub/grub.cfg
+  when: stat.stat.exists
 
 - import_tasks: machine-id.yaml
-- import_tasks: local-mount-share-root.yaml
+# docker need this
+# - import_tasks: local-mount-share-root.yaml

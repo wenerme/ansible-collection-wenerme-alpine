@@ -9,7 +9,7 @@ namespace: wenerme
 name: alpine
 
 # The version of the collection. Must be compatible with semantic versioning
-version: 1.0.4
+version: 1.0.5
 
 # The path to the Markdown (.md) readme file. This path is relative to the root of the collection
 readme: README.md
@@ -64,3 +64,7 @@ issues: https://github.com/wenerme/ansible-collection-wenerme-alpine/issue
 build_ignore:
 - tests/integration/inventory*
 - changelogs/.plugin-cache.yaml
+- .env
+- .DS_Store
+- ignored.md
+- ignored

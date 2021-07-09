@@ -1,0 +1,41 @@
+- import_tasks: n2n-edge-conf.yaml
+
+- name: n2n edge | load modules
+  become: true
+  modprobe:
+    name: "{{item}}"
+    state: present
+  loop: &modules
+  - tun
+
+- name: n2n edge | persist mpdules
+  become: true
+  lineinfile:
+    path: /etc/modules-load.d/n2n-edge.conf
+    line: "{{item}}"
+    create: true
+  loop: *modules
+
+- name: n2n edge | start service
+  become: true
+  service:
+    name: edge
+    state: started
+    enabled: true
+  when: edge.instance is undefined
+
+- name: n2n edge | ln instance
+  become: true
+  file:
+    src: /etc/init.d/edge
+    dest: /etc/init.d/edge.{{edge.instance}}
+    state: link
+  when: edge.instance is defined
+
+- name: n2n edge | start instance service
+  become: true
+  service:
+    name: edge.{{edge.instance}}
+    state: started
+    enabled: true
+  when: edge.instance is defined

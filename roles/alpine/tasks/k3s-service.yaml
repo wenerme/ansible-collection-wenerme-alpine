@@ -1,4 +1,3 @@
-- import_tasks: k3s-install.yaml
 - import_tasks: k3s-conf.yaml
 
 - name: k3s | docker

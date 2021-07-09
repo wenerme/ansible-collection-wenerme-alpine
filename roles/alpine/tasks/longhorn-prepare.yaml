@@ -11,6 +11,7 @@
   - blkid
   - lsblk
   - util-linux
+  - nfs-utils
 
 - name: longhorn | start iscsi
   become: true

@@ -1,0 +1,13 @@
+- import_tasks: n2n-edge-preset.yaml
+
+- name: n2n edge | conf
+  become: true
+  copy:
+    dest: '{{edge.conf}}'
+    content: |
+      --tun-device={{edge.netname|default(edge.instance)}}
+      --community={{edge.community}}
+      -k={{edge.password}}
+      -a={{edge.address}}
+      -s={{edge.netmask}}
+      --supernode-list={{edge.supernodes}}

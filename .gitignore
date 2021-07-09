@@ -3,3 +3,4 @@
 ignored*
 *-ignored.*
 .env
+.DS_Store
