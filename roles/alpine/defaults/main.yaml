@@ -1,6 +1,7 @@
 # alpine mirror
 # https://mirrors.ustc.edu.cn/alpine - slower
-alpine_mirror: https://mirrors.aliyun.com/alpine
+# alpine_mirror: https://mirrors.aliyun.com/alpine
+alpine_mirror: https://mirrors.sjtug.sjtu.edu.cn/alpine
 
 # docker mirror
 docker_mirror: https://docker.mirrors.ustc.edu.cn

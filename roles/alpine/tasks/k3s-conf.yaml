@@ -70,7 +70,6 @@
     line: >-
       {{ '' if item.key in ['K3S_EXEC', 'K3S_OPTS'] else 'export ' }}{{ item.key }}={{ item.value is number | ternary( item.value , '"'+( item.value | string )+'"') }}
     regex: '^(#|export|\s)*{{ item.key }}\s*='
-    mode: preserve
   loop: "{{ k3s_env | dict2items }}"
   when:
     - k3s_env is defined

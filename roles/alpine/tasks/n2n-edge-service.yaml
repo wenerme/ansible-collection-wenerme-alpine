@@ -1,3 +1,4 @@
+- import_tasks: n2n-install.yaml
 - import_tasks: n2n-edge-conf.yaml
 
 - name: n2n edge | load modules

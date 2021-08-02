@@ -1,0 +1,5 @@
+- name: n2n | install
+  become: true
+  apk:
+    name: n2n
+    state: present

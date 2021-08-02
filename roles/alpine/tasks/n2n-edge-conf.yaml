@@ -11,3 +11,20 @@
       -a={{ edge.address }}
       -s={{ edge.netmask }}
       --supernode-list={{ edge.supernodes }}
+      {{'-r' if (edge.forward|default(false))}}
+      {{ edge.extras | default('') }}
+  register: conf
+
+- name: n2n edge | restart
+  become: true
+  command: service edge --ifstarted restart
+  when:
+  - conf.changed
+  - edge.instance is undefined
+
+- name: n2n edge | instance restart
+  become: true
+  command: service edge.{{ edge.instance }} --ifstarted restart
+  when:
+  - conf.changed
+  - edge.instance is defined

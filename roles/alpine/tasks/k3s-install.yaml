@@ -14,8 +14,10 @@
     - musl
     - socat
     - iproute2
-    - cni-plugins
     - nfs-utils
+    - cni-plugins
+    - k3s
+    - k3s-openrc
 
 # < v3.13
 # - name: k3s | install cni-plugins
@@ -24,10 +26,10 @@
 #     repository: https://mirrors.aliyun.com/alpine/v3.13/community/
 #     name: cni-plugins
 
-- name: k3s | install k3s
-  become: true
-  apk:
-    # < v3.13
-    # repository: https://mirrors.aliyun.com/alpine/v3.13/community/
-    # repository: https://mirrors.tuna.tsinghua.edu.cn/alpine/edge/testing/
-    name: k3s
+# - name: k3s | install k3s
+#   become: true
+#   apk:
+#     # < v3.13
+#     # repository: https://mirrors.aliyun.com/alpine/v3.13/community/
+#     # repository: https://mirrors.tuna.tsinghua.edu.cn/alpine/edge/testing/
+#     name: k3s
