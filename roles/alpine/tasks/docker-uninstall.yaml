@@ -1,0 +1,16 @@
+
+- name: stop docker
+  become: true
+  service:
+    name: docker
+    state: stopped
+    enabled: false
+
+- name: docker | uninstall
+  become: true
+  package:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - docker
+    - py3-dockerpty

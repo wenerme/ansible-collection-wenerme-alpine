@@ -20,7 +20,7 @@
     - util-linux
     - util-linux-bash-completion
     # sshrc needs
-    - vim
+    - xxd
     - tar
     - coreutils
     - openssl

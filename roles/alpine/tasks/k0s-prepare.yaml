@@ -1,0 +1,19 @@
+- name: k0s | install deps
+  become: true
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - conntrack-tools
+    - coreutils
+    - dbus
+    - findutils
+    - ipset
+    - ipvsadm
+    - iptables
+    - musl
+    - socat
+    - iproute2
+    - nfs-utils
+
+- import_tasks: machine-id.yaml

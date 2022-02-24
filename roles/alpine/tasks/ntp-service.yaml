@@ -1,0 +1,19 @@
+
+- name: ntp-service | ntp_service:=chronyd
+  set_fact:
+    ntp_service: chronyd
+  when: ntp_service is undefined
+
+- name: ntp-service | install chrony
+  apk:
+    name: chrony
+  when: ntp_service == 'chronyd'
+
+- name: ntp-service | start {{ ntp_service }}
+  become: true
+  service:
+    # busybox->ntpd chronyd openntpd
+    name: "{{ ntp_service }}"
+    enabled: true
+    state: started
+    runlevel: default

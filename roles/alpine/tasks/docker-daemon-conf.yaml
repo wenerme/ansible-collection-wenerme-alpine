@@ -1,0 +1,57 @@
+# https://docs.docker.com/engine/reference/commandline/dockerd/
+
+- name: docker-daemon-conf | ensure /etc/docker
+  become: true
+  file:
+    path: /etc/docker
+    state: directory
+    mode: 0755
+
+- name: docker-daemon-conf | ensure /etc/docker/daemon.json
+  become: true
+  copy:
+    dest: /etc/docker/daemon.json
+    content: '{}'
+    mode: 0644
+    force: false
+
+- name: load var from file
+  slurp:
+    src: /etc/docker/daemon.json
+  register: docker_vars
+
+- name: append more key/values
+  set_fact:
+    docker_vars: "{{ docker_vars.content|b64decode|from_json }}"
+
+
+- name: append more key/values
+  set_fact:
+    docker_vars: "{{ docker_vars | default([]) | combine({ item.name : item.value }) }}"
+  loop:
+  - { name: "registry-mirrors", value: [ "{{docker_mirror}}" ] }
+  when: docker_mirror is defined
+
+- name: combine docker_daemon_conf
+  set_fact:
+    docker_vars: "{{ docker_vars | default([]) | combine(docker_daemon_conf) }}"
+  when: docker_daemon_conf is defined
+
+- name: apply docker_daemon_entries
+  set_fact:
+    docker_vars: "{{ docker_vars | default([]) | combine({ item.name : item.value }) }}"
+  loop: '{{docker_daemon_entries}}'
+  when: docker_daemon_entries is defined
+
+
+- debug:
+    var: docker_vars
+  tags:
+  - debug
+
+- name: docker-daemon-conf | write back
+  become: true
+  copy:
+    content: "{{ docker_vars | to_nice_json }}"
+    dest: /etc/docker/daemon.json
+  notify: docker-reload

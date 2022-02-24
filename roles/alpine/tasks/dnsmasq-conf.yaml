@@ -1,5 +1,5 @@
 # include /etc/dnsmasq.d
-- name: dnsmasq include dnsmasq.d
+- name: dnsmasq conf | include dnsmasq.d
   become: true
   lineinfile:
     path: /etc/dnsmasq.conf
@@ -10,7 +10,7 @@
   when: dnsmasq_include_dir is undefined or dnsmasq_include_dir
   notify: dnsmasq-reload
 
-- name: write inline resolv.dnsmasq.conf
+- name: dnsmasq conf | write inline resolv.dnsmasq.conf
   become: true
   copy:
     dest: /etc/resolv.dnsmasq.conf
@@ -20,7 +20,7 @@
   when: dnsmasq_resolv_conf is defined
   notify: dnsmasq-reload
 
-- name: conf-dir resolv.dnsmasq.conf
+- name: dnsmasq conf | conf-dir resolv.dnsmasq.conf
   become: true
   lineinfile:
     path: /etc/dnsmasq.d/resolv.conf
@@ -31,7 +31,7 @@
   when: dnsmasq_include_dir is undefined or dnsmasq_include_dir
   notify: dnsmasq-reload
 
-- name: dnsmasq conf sync
+- name: dnsmasq conf | sync dnsmasq.conf
   include_role:
     name: alpine
     tasks_from: service-conf-sync
@@ -41,7 +41,7 @@
     service_conf_file: dnsmasq.conf
     service_notify_type: restart
 
-- name: resolv dnsmasq conf sync
+- name: dnsmasq conf | sync resolv.conf
   include_role:
     name: alpine
     tasks_from: service-conf-sync
@@ -51,7 +51,7 @@
     service_conf_file: resolv.conf
     service_notify_type: restart
 
-- name: dnsmasq.d conf sync
+- name: dnsmasq conf | sync dnsmasq.d
   include_role:
     name: alpine
     tasks_from: service-conf-sync
@@ -61,3 +61,15 @@
     service_conf_file: dnsmasq.d
     service_conf_delete: true
     service_notify_type: restart
+
+- name: dnsmasq conf | stat /etc/resolv.dnsmasq.conf
+  stat:
+    path: /etc/resolv.dnsmasq.conf
+  register: stat
+- name: dnsmasq conf | fallback to /etc/resolv.conf
+  copy:
+    src: /etc/resolv.conf
+    dest: /etc/resolv.dnsmasq.conf
+    remote_src: true
+  when: not stat.stat.exists
+  become: true

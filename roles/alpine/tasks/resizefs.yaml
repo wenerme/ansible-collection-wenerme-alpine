@@ -1,4 +1,4 @@
-- name: resizeroofs | deps
+- name: resize rootfs | deps
   become: true
   package:
     name: "{{ item }}"
@@ -7,38 +7,41 @@
     - e2fsprogs-extra
     - util-linux
 
-- name: resizeroofs | detect root mount
+- name: resize rootfs | detect root mount
   block:
     - command: sed -nr 's#^(/\S+)\s+/\s+.*#\1#p' /proc/mounts
-      register: shell_result
+      register: mount_result
       changed_when: false
       name: find mounts
     - set_fact:
-        root_part: "{{ shell_result.stdout }}"
-        root_dev: "{{ shell_result.stdout }}"
-      name: set root_{part,dev}
+        root_part: "{{ mount_result.stdout }}"
+        # root_dev: "{{ mount_result.stdout }}"
+      name: set root_part
     - command: lsblk -no pkname {{ root_part }}
       register: shell_result
       changed_when: false
-      name: find root part
+      name: find root dev of "{{ root_part }}"
       # /dev/vda will output nothing
     - set_fact:
         root_dev: "/dev/{{ shell_result.stdout }}"
       when: shell_result.stdout != ""
       name: set root_dev
+    - set_fact:
+        root_dev: "{{ mount_result.stdout }}"
+      name: fallback to root part
   when: root_dev is undefined
 
-- name: resizeroofs | default root dev to root part
+- name: resize rootfs | default root dev to root part
   set_fact:
     root_dev: "{{ root_part }}"
   when: root_dev is undefined or root_dev == ""
 
-- name: resizeroofs | default root par to root dev part2
+- name: resize rootfs | default root part to root dev part2
   set_fact:
     root_part: "{{ root_dev }}2"
   when: root_part is undefined
 
-- name: resizerootfs | assert
+- name: resize rootfs | assert
   assert:
     that:
       - root_dev is defined
@@ -46,18 +49,18 @@
       - root_part is defined
       - root_part != ""
 
-- name: resizeroofs | resizing
+- name: resize rootfs | resizing
   debug:
     msg: "Device {{ root_dev }} - Partition {{ root_part }}"
 
-- name: resizeroofs | expand last partation
+- name: resize rootfs | expand last partation
   become: true
   raw: echo -e 'd\n\nn\n\n\n\n\n\np\nw\n' | fdisk {{ root_dev }}
   register: repartition
-  # TODO
+  # TODOz
   changed_when: false
 
-- name: resizeroofs | resize2fs
+- name: resize rootfs | resizeorg.
   become: true
   raw: resize2fs {{ root_part }}
   when: repartition.changed

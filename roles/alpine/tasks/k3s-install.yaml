@@ -19,6 +19,8 @@
     - k3s
     - k3s-openrc
 
+# apk add conntrack-tools coreutils dbus findutils ipvsadm ipset iptables socat iproute2 nfs-utils
+
 # < v3.13
 # - name: k3s | install cni-plugins
 #   become: true

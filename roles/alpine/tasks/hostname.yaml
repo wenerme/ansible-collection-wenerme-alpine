@@ -1,3 +1,9 @@
+# - name: debug hostname
+#   ansible.builtin.debug:
+#     msg:
+#     - "{{hostname|default('n/a')}}"
+#     - "{{inventory_hostname}}"
+
 - name: set hostname
   become: true
   hostname:

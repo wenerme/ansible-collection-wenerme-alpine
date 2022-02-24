@@ -1,16 +1,24 @@
 # [ -f /etc/machine-id ] || ( uuidgen | sudo tee -a /etc/machine-id )
 
-- name: stat /etc/machine-id
-  stat:
-    path: /etc/machine-id
-  register: stat
-
-- name: create /etc/machine-id
+- name: machine-id | enable
   become: true
-  copy:
-    # ‘/etc/machine-id' should contain a hex string of length 32, not length 36, with no other text
-    # UUID without dash
-    # uuidgen | tr '[:upper:]' '[:lower:]' | sed 's/-//g'
-    dest: /etc/machine-id
-    content: "{{ 999999999 | random | to_uuid | regex_replace('-', '') }}"
-  when: not stat.stat.exists or (machine_id_force | default(false))
+  service:
+    name: machine-id
+    enabled: true
+    state: started
+    runlevel: default
+
+# - name: stat /etc/machine-id
+#   stat:
+#     path: /etc/machine-id
+#   register: stat
+#
+# - name: create /etc/machine-id
+#   become: true
+#   copy:
+#     # ‘/etc/machine-id' should contain a hex string of length 32, not length 36, with no other text
+#     # UUID without dash
+#     # uuidgen | tr '[:upper:]' '[:lower:]' | sed 's/-//g'
+#     dest: /etc/machine-id
+#     content: "{{ 999999999 | random | to_uuid | regex_replace('-', '') }}"
+#   when: not stat.stat.exists or (machine_id_force | default(false))

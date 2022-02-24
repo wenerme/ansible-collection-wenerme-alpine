@@ -1,6 +1,6 @@
 - import_tasks: docker-install.yaml
 
-- import_tasks: docker-conf.yaml
+- import_tasks: docker-daemon-conf.yaml
 
 - name: start docker on bootstrap
   become: true

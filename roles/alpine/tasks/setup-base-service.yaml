@@ -13,14 +13,8 @@
   # TODO
   changed_when: false
 
-- name: setup ntp
-  become: true
-  service:
-    # busybox->ntpd chronyd openntpd
-    name: "{{ ntp_service|default('ntpd') }}"
-    enabled: true
-    state: started
-    runlevel: default
+- import_tasks: ntp-service.yaml
+- import_tasks: machine-id.yaml
 
 # poweroff or reset works
 - name: enable acpid
