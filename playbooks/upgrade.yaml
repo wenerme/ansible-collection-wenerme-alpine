@@ -14,10 +14,12 @@
         name: alpine
         tasks_from: apk-repo
       vars:
-        alpine_version: "3.12"
+        alpine_version: "3.15"
+      name: apk-repo
     - import_role:
         name: alpine
         tasks_from: apk-version
+      name: apk-version
 
     - name: nothing to upgrade
       meta: end_play

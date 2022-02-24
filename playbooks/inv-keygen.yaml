@@ -11,3 +11,4 @@
       size: 2048
       comment: Administrator
     when: not ((inv_name+'/credentials/admin_rsa.pub') is file)
+    name: keygen

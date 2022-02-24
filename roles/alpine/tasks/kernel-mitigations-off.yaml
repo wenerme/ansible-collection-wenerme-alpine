@@ -2,10 +2,10 @@
   become: true
   lineinfile:
     path: /etc/update-extlinux.conf
-    backrefs: yes
+    backrefs: true
     regexp: '^default_kernel_opts="[^"]*mitigations=off[^"]*"'
     state: absent
-  check_mode: yes
+  check_mode: true
   register: lineinfile
   changed_when: false
 
@@ -13,7 +13,7 @@
   become: true
   lineinfile:
     path: /etc/update-extlinux.conf
-    backrefs: yes
+    backrefs: true
     regexp: '^default_kernel_opts="([^"]*)"'
     line: 'default_kernel_opts="\1 mitigations=off"'
   when: not lineinfile.found

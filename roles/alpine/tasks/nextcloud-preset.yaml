@@ -32,7 +32,7 @@
       get_url:
         dest: "{{ nextcloud_apps_json }}"
         url: https://apps.nextcloud.com/api/v1/platform/{{ nextcloud_version }}/apps.json
-        use_proxy: yes
+        use_proxy: true
       when: not (nextcloud_apps_json is file)
 
     - set_fact:

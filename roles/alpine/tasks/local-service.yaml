@@ -2,6 +2,6 @@
   become: true
   service:
     name: local
-    enabled: yes
+    enabled: true
   tags:
     - service-enable

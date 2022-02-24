@@ -21,7 +21,7 @@
     dest: "/opt/k3s/"
     owner: no
     group: no
-    use_ssh_args: yes
+    use_ssh_args: true
 
 # - name: chmod
 #   become: true

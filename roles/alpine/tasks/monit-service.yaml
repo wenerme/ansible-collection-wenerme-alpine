@@ -12,6 +12,6 @@
   become: true
   service:
     name: monit
-    enabled: yes
+    enabled: true
   tags:
     - service-enable
