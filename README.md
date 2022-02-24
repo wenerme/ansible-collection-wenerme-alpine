@@ -10,17 +10,20 @@ ansible-galaxy collection install wenerme.alpine
 
 - apk
 - consul
+- dnsmasq
 - docker
 - haproxy
+- k0s
 - k3s
+- n2n
 - nextcloud
+- ntp
 - pdns - PowerDNS
 - prometheus
 - setup
 - tinc
 - zerotier
 - zfs
-- n2n
 
 ## Support Multi Inventory Structure
 

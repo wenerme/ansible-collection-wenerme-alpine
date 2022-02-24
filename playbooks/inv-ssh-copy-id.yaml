@@ -1,0 +1,12 @@
+- name: SSH Copy ID
+  hosts: all
+  tasks:
+  - set_fact:
+      remote_user: admin
+    when: remote_user is undefined
+  - name: Set authorized key taken from file
+    become: "{{remote_user != ansible_user}}"
+    authorized_key:
+      user: "{{remote_user}}"
+      state: present
+      key: "{{ lookup('file', inv_name+'/credentials/admin_rsa.pub') }}"
