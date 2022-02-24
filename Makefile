@@ -6,3 +6,5 @@ publish: build
 
 lint:
 	docker run --rm -h toolset -it -v $(PWD):/host -w /host quay.io/ansible/toolset ansible-lint
+
+ci: lint
