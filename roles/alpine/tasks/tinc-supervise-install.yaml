@@ -1,7 +1,7 @@
-- name: tinc | install tincd.netanme service
+- name: tinc | install tinc.netanme service
   become: true
   copy:
-    dest: /etc/init.d/tincd.netname
+    dest: /etc/init.d/tinc.netname
     mode: +x
     content: |
       #!/sbin/openrc-run
@@ -34,7 +34,7 @@
 
       checkconfig() {
         # warn this if not found
-        if [ ! -f "/etc/tinc/$NETNAME/tinc.conf" ] ; then
+        if [ ! -f "/etc/tinc/$NETNAME/tinc.conf" ]; then
           eerror "No VPN network configured"
           return 1
         fi
@@ -47,10 +47,10 @@
         eend $?
       }
 
-- name: tinc | install tincd.{{ tinc_netname }}
+- name: tinc | install tinc.{{ tinc_netname }}
   become: true
   file:
-    dest: /etc/init.d/tincd.{{ tinc_netname }}
-    src: /etc/init.d/tincd.netname
+    dest: /etc/init.d/tinc.{{ tinc_netname }}
+    src: /etc/init.d/tinc.netname
     state: link
   when: tinc_netname is defined

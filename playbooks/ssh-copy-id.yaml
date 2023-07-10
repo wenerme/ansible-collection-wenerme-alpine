@@ -13,7 +13,7 @@
   tasks:
     - name: Set authorized key taken from file
       become: "{{ remote_user != ansible_user }}"
-      authorized_key:
+      community.crypto.authorized_key:
         user: "{{ remote_user }}"
         state: present
         key: "{{ lookup('file', ssh_pub_key_file) }}"

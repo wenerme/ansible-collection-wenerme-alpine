@@ -1,0 +1,6 @@
+- name: logrotate | install
+  become: true
+  apk:
+    name: logrotate
+
+- import_tasks: crond-service.yaml

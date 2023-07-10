@@ -1,0 +1,14 @@
+- name: k0s logrotate
+  become: true
+  copy:
+    dest: /etc/logrotate.d/k0s
+    mode: 0644
+    content: |
+      /var/log/k0s.log {
+        missingok
+        notifempty
+        copytruncate
+        daily
+        rotate 7
+        maxage 365
+      }

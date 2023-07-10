@@ -1,25 +1,28 @@
+# crond
+# apk add coreutils findutils iptables iproute2 nfs-utils
 - name: k3s | install deps
   become: true
   package:
     name: "{{ item }}"
     state: present
   loop:
-    - conntrack-tools
-    - containerd
     - coreutils
-    - dbus
     - findutils
-    - ipset
     - iptables
     - musl
-    - socat
     - iproute2
     - nfs-utils
-    - cni-plugins
-    - k3s
-    - k3s-openrc
-
+    # - conntrack-tools
+    # - containerd
+    # - dbus
+    # - ipset
+    # - socat
+    # - cni-plugins
+    # - k3s
+    # - k3s-openrc
+# apk add coreutils findutils iptables musl iproute2 nfs-utils socat
 # apk add conntrack-tools coreutils dbus findutils ipvsadm ipset iptables socat iproute2 nfs-utils
+# sudo apk del k3s cni-plugins conntrack-tools containerd dbus ipset socat
 
 # < v3.13
 # - name: k3s | install cni-plugins

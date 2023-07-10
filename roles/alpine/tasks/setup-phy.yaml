@@ -16,6 +16,8 @@
     - bind-tools
     - tcpdump
     - dmidecode
-    # - lm-sernsor
-    # - lm-sensors-sensord
-    # - lm-sensors-detect
+    # server hw
+    - lm-sensors
+    - lm-sensors-sensord
+    - lm-sensors-detect
+    - smartmontools

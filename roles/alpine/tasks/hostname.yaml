@@ -4,9 +4,9 @@
 #     - "{{hostname|default('n/a')}}"
 #     - "{{inventory_hostname}}"
 
-- name: set hostname
+- name: set hostname to "{{ hostname|default(inventory_hostname) }}"
   become: true
-  hostname:
+  ansible.builtin.hostname:
     name: "{{ hostname|default(inventory_hostname) }}"
     use: alpine
 
@@ -18,4 +18,4 @@
     state: present
   loop:
     - "127.0.0.1"
-    - "::"
+    - "::1"

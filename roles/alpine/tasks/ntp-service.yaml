@@ -5,6 +5,7 @@
   when: ntp_service is undefined
 
 - name: ntp-service | install chrony
+  become: true
   apk:
     name: chrony
   when: ntp_service == 'chronyd'

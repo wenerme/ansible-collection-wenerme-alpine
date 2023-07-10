@@ -1,4 +1,4 @@
-- name: enable local server
+- name: local service | enable
   become: true
   service:
     name: local

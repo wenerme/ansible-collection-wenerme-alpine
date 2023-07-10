@@ -11,6 +11,9 @@
     - tree
     - rsync
     - htop
+    - btop
+    - procps
+    - lsof
     # 网络
     - iftop
     - tcpdump

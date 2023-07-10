@@ -1,7 +1,9 @@
 # alpine mirror
-# https://mirrors.ustc.edu.cn/alpine - slower
-# alpine_mirror: https://mirrors.aliyun.com/alpine
-alpine_mirror: https://mirrors.sjtug.sjtu.edu.cn/alpine
+# https://mirrors.ustc.edu.cn/alpine - 上海访问慢
+# https://mirrors.aliyun.com/alpine - 可能慢几天
+# https://mirrors.sjtug.sjtu.edu.cn/alpine - 没那么稳定
+# https://mirrors.tuna.tsinghua.edu.cn/alpine
+alpine_mirror: https://mirrors.tuna.tsinghua.edu.cn/alpine
 
 # docker mirror
 docker_mirror: https://docker.mirrors.ustc.edu.cn
