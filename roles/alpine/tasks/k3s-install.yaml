@@ -1,40 +1,28 @@
-# crond
-# apk add coreutils findutils iptables iproute2 nfs-utils
+- name: k3s | machine-id | enable
+  become: true
+  service:
+    name: machine-id
+    enabled: true
+    state: started
+    runlevel: default
+- name: k3s | cgroups | enable
+  become: true
+  service:
+    name: cgroups
+    enabled: true
+    state: started
 - name: k3s | install deps
   become: true
   package:
     name: "{{ item }}"
     state: present
   loop:
-    - coreutils
-    - findutils
-    - iptables
-    - musl
-    - iproute2
-    - nfs-utils
-    # - conntrack-tools
-    # - containerd
-    # - dbus
-    # - ipset
-    # - socat
-    # - cni-plugins
-    # - k3s
-    # - k3s-openrc
-# apk add coreutils findutils iptables musl iproute2 nfs-utils socat
-# apk add conntrack-tools coreutils dbus findutils ipvsadm ipset iptables socat iproute2 nfs-utils
-# sudo apk del k3s cni-plugins conntrack-tools containerd dbus ipset socat
+  - coreutils
+  - findutils
+  - iptables
+  - musl
+  - iproute2
+  - nfs-utils
+  - rsync
 
-# < v3.13
-# - name: k3s | install cni-plugins
-#   become: true
-#   apk:
-#     repository: https://mirrors.aliyun.com/alpine/v3.13/community/
-#     name: cni-plugins
-
-# - name: k3s | install k3s
-#   become: true
-#   apk:
-#     # < v3.13
-#     # repository: https://mirrors.aliyun.com/alpine/v3.13/community/
-#     # repository: https://mirrors.tuna.tsinghua.edu.cn/alpine/edge/testing/
-#     name: k3s
+- include_tasks: k3s-fetch.yaml

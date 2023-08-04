@@ -1,0 +1,33 @@
+- name: log | base packages
+  become: true
+  apk:
+    name: "{{ item }}"
+  loop:
+  - logrotate
+- name: syslog | /etc/syslog.conf
+  become: true
+  copy:
+    content: |
+      kern.*  /var/log/kern.log
+      *.*     /var/log/messages
+    dest: /etc/syslog.conf
+    mode: 0644
+  register: result
+- name: syslog | restart
+  become: true
+  service:
+    name: syslog
+    state: restarted
+  when: result.changed
+- name: crond | start
+  become: true
+  service:
+    name: crond
+    state: started
+    enabled: true
+- name: klogd | start
+  become: true
+  service:
+    name: klogd
+    state: started
+    enabled: true

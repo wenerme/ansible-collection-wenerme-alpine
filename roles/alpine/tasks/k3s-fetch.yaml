@@ -1,0 +1,63 @@
+- name: k3s | arch of {{ansible_architecture}}
+  block:
+  - name: setup ansible_architecture
+    setup: { }
+    when: ansible_architecture is undefined
+  - set_fact:
+      k3s_arch: "{{ansible_architecture | regex_replace('aarch64', 'arm64') | regex_replace('x86_64', 'amd64')}}"
+  when: k3s_arch is undefined
+
+- name: k3s | version
+  block:
+  - shell: |
+      curl -sf https://update.k3s.io/v1-release/channels | jq -r '.data[] | select(.id == "stable") | .latest'
+    register: result
+    name: fetch latest version
+  - set_fact:
+      k3s_version: "{{ result.stdout }}"
+  when: k3s_version is undefined
+
+- name: k3s | download
+  debug:
+    msg: "K3S {{ k3s_arch }} {{ k3s_version }}"
+
+- name: k3s | install dir
+  become: true
+  file:
+    owner: admin
+    path: /data/opt/k3s
+    state: directory
+- name: k3s | fetch
+  block:
+  - get_url:
+      url: https://ghproxy.com/github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/sha256sum-{{k3s_arch}}.txt
+      dest: /data/opt/k3s/sha256sum-{{k3s_version}}.txt
+    name: k3s | fetch checksum
+  - get_url:
+      url: https://ghproxy.com/github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s
+      dest: /data/opt/k3s/k3s-{{k3s_version}}
+      mode: 0755
+    name: k3s | fetch
+    when: k3s_arch == 'amd64'
+  - get_url:
+      url: https://ghproxy.com/github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s-{{k3s_arch}}
+      dest: /data/opt/k3s/k3s-{{k3s_version}}
+      mode: 0755
+    name: k3s | fetch for {{k3s_arch}}
+    when: k3s_arch != 'amd64'
+  - copy:
+      src: /data/opt/k3s/k3s-{{k3s_version}}
+      dest: /data/opt/k3s/k3s
+      mode: 0755
+      remote_src: true
+    name: k3s | versioned to k3s
+- block:
+  - shell: |
+      cd /data/opt/k3s
+      sha256sum -c sha256sum-{{k3s_version}}.txt --ignore-missing
+    name: k3s | checksum
+  rescue:
+  - file:
+      path: /data/opt/k3s/k3s-{{k3s_version}}
+      state: absent
+    name: k3s | rm invalid download
