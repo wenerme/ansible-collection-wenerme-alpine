@@ -3,15 +3,15 @@
   apk:
     name: "{{ item }}"
   loop:
-    - dante-server
+  - dante-server
 
 - name: sockd | inline sockd.conf
   become: true
   copy:
     dest: /etc/sockd.conf
-    content: "{{ sockd_conf_inline }}"
+    content: "{{ sockd_conf }}"
     mode: 0644
-  when: sockd_conf_inline is defined
+  when: sockd_conf is defined
   notify: sockd-reload
 
 - name: sockd | start

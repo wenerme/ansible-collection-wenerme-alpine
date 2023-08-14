@@ -1,4 +1,4 @@
-- name: remove repo
+- name: apk repo | remove repo
   become: true
   lineinfile:
     path: /etc/apk/repositories
@@ -7,8 +7,9 @@
   loop:
     - main
     - community
+  when: apk_repo is not defined
 
-- name: remove apk repo
+- name: apk repo | remove apk_repo
   become: true
   lineinfile:
     path: /etc/apk/repositories

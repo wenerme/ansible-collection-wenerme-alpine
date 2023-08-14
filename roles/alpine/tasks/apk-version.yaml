@@ -1,13 +1,13 @@
 - import_tasks: apk-update.yaml
-- name: apk version
+- name: apk | version
   raw: apk version
   register: raw_result
   changed_when: false
-- name: apk upgrade detail
+- name: apk | upgrade detail
   debug:
     var: raw_result.stdout_lines
   changed_when: false
 
-- name: set upgradable count
+- name: apk | apk_upgradable_count
   set_fact:
     apk_upgradable_count: "{{ (raw_result.stdout_lines|length) - 1|int }}"

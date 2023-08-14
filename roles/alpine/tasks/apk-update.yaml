@@ -1,4 +1,4 @@
-- name: apk update
+- name: apk | update
   become: true
   apk:
     update_cache: true

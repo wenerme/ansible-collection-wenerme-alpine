@@ -11,12 +11,15 @@
     - tree
     - rsync
     - htop
+    # fancy monitor
     - btop
-    - procps
+    # procps for < 3.17
+    - procps-ng
     - lsof
     # 网络
     - iftop
     - tcpdump
+    # for dig
     - bind-tools
     # info
     - neofetch

@@ -1,17 +1,59 @@
-- name: require specify version
-  assert:
-    that:
-      - version is defined
+- block:
+  - stat:
+      path: /etc/alpine-release.apk-new
+    register: result
+  - name: alpine | use alpine-release.apk-new
+    shell: mv /etc/alpine-release.apk-new /etc/alpine-release
+    become: true
+    when: result.stat.exists
 
-- include: alpine-preset.yaml
+- block:
+  - name: alpine | get alpine-release
+    slurp:
+      src: "/etc/alpine-release"
+    register: result
+  - set_fact:
+      alpine_release: "{{ result.content | b64decode | trim }}"
+  when: alpine_release is not defined
 
-- name: check is same version
+- block:
+  - name: alpine | latest release version
+    raw: >
+      curl -sf https://alpinelinux.org/releases.json
+      | jq '.release_branches[1].releases[0].version' -r
+    register: result
+    changed_when: false
+    delegate_to: localhost
+  - set_fact:
+      alpine_upgrade_release: "{{ result.stdout | trim }}"
+      alpine_version: "{{ result.stdout | regex_search('^[0-9]+[.][0-9]+')  }}"
+  when: alpine_upgrade_release is not defined
+
+
+- name: alpine | same release
   meta: end_play
-  when: version == alpine_major_version
+  when: alpine_release == alpine_upgrade_release
 
-- name: upgrade alpine major version to {{ version }}
+- import_tasks: apk-repo.yaml
+- import_tasks: apk-version.yaml
+
+- name: alpine | no packages to upgrade
+  meta: end_play
+  when: (apk_upgradable_count|int) == 0
+
+- pause:
+    seconds: 10
+    prompt: will upgrade to alpine {{ alpine_version }} in 10 seconds, from {{ alpine_release }}  to {{ alpine_upgrade_release }} by {{apk_upgradable_count}} packages.
+  name: alpine | upgrade confirm
+
+- import_role:
+    name: alpine
+    tasks_from: apk-upgrade
+
+- pause:
+    seconds: 5
+    prompt: reboot in 5 seconds
+  name: alpine | reboot
+- name: reboot
   become: true
-  replace:
-    path: /etc/apk/repositories
-    regexp: /v{{ alpine_major_version }}/
-    replace: /v{{ version }}/
+  raw: reboot

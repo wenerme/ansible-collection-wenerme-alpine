@@ -1,6 +1,10 @@
-- include_tasks: alpine-preset.yaml
-  when: alpine_version is undefined
-- name: set apk repo
+# - name: apk | check version
+#   assert:
+#     that:
+#     - alpine_version is defined
+#     - alpine_mirror is defined
+
+- name: apk | repositories {{alpine_version}}
   become: true
   copy:
     dest: /etc/apk/repositories

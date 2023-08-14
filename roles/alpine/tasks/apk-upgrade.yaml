@@ -1,8 +1,8 @@
 - include_tasks: apk-version.yaml
   when: apk_upgradable_count is undefined
 
-- name: apk upgrade
+- name: apk | upgrade {{apk_upgradable_count}}
   become: true
   apk:
-    available: "{{ apk_upgrade_all|default(false) }}"
+    available: "{{ apk_upgrade_available|default(true) }}"
     upgrade: true

@@ -62,24 +62,30 @@ export ANSIBLE_INVENTORY=$PWD/<inv_name>/inventory
 ## Common Operations
 
 ```bash
-inv=wener
-export ANSIBLE_INVENTORY=$PWD/$inv/inventory
+inv_name=wener
+export ANSIBLE_INVENTORY=$PWD/$inv_name/inventory
+
 
 # ansible-playbook inv-keygen.yaml
-# ssh-add $inv/credentials/admin_rsa
+# ssh-add $inv_name/credentials/admin_rsa
 
 # ansible-playbook inv-ssh-copy-id.yaml -e remote_user=root -k
 # ssh-copy-id ROOT for initial setup
-ssh-copy-id -i $inv/credentials/admin_rsa.pub -o PreferredAuthentications=password -o PubkeyAuthentication=no root@192.168.1.1
+ssh-copy-id -i $inv_name/credentials/admin_rsa.pub -o PreferredAuthentications=password -o PubkeyAuthentication=no root@192.168.1.1
 
 # alias
+echo '- import_playbook: wenerme.alpine.adhoc' > adhoc.yaml
 adhoc(){ local task=$1;shift; ansible-playbook $PWD/adhoc.yaml -e task=$task $*; }
 
 # basic setup
-adhoc setup-base -e ansible_user=root
-adhoc setup-base-service
+echo '- import_playbook: wenerme.alpine.setup' > setup.yaml
+ansible-playbook setup.yaml -e ansible_user=root
+
+# adhoc setup-base
+# adhoc setup-base-service
+# adhoc hostname
+
 adhoc setup-ops
-adhoc hostname
 
 # do as you need
 # adhoc resizefs

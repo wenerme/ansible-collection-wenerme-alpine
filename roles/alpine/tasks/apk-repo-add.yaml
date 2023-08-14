@@ -1,4 +1,4 @@
-- name: add mirror
+- name: apk repo | add mirror
   become: true
   lineinfile:
     path: /etc/apk/repositories
@@ -8,8 +8,9 @@
   loop:
     - main
     - community
+  when: apk_repo is not defined
 
-- name: add apk repo
+- name: apk repo | add  apk_repo
   become: true
   lineinfile:
     path: /etc/apk/repositories
