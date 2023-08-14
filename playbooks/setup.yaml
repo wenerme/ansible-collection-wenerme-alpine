@@ -1,0 +1,29 @@
+- name: Setup host
+  hosts: all
+  roles:
+  - alpine
+  collections:
+  - wenerme.alpine
+  gather_facts: false
+  tasks:
+  - name: setup | ensure admin
+    stat:
+      path: /home/admin
+    register: result
+  - block:
+    - set_fact:
+        ansible_ssh_user: root
+        remote_user: root
+    - include_role:
+        role: alpine
+        tasks_from: setup-base
+    - set_fact:
+        ansible_ssh_user: admin
+    when: result.stat.exists == false
+  - gather_facts: {}
+  - import_role:
+      role: alpine
+      tasks_from: setup-base-service
+  - import_role:
+      role: alpine
+      tasks_from: hostname

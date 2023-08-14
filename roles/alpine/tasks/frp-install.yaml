@@ -1,0 +1,72 @@
+- name: frp | deps
+  become: true
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+  - frp-openrc
+  - tar # for unarchive
+- block:
+  - shell: curl -s "https://apis.wener.me/open/github/r/fatedier/frp/version" | jq -r .version
+    register: result
+    changed_when: false
+  - set_fact:
+      frp_version: "{{ result.stdout }}"
+  when: frp_version is not defined
+  delegate_to: localhost
+- file:
+    owner: admin
+    path: /tmp/dl/frp-{{frp_version}}
+    state: directory
+  name: frp | prepare install {{frp_version}}
+- file:
+    path: /etc/frp
+    state: directory
+  become: true
+- name: frp | fetch
+  get_url:
+    url: https://ghproxy.com/github.com/fatedier/frp/releases/download/v{{frp_version}}/frp_{{frp_version}}_linux_amd64.tar.gz
+    dest: /tmp/dl/frp_{{frp_version}}_linux_amd64.tar.gz
+    mode: 0755
+  register: result
+- name: frp | extract
+  unarchive:
+    src: "{{result.dest}}"
+    dest: /tmp/dl/frp-{{frp_version}}
+    remote_src: true
+    extra_opts:
+    - --strip-components=1
+  when: result is changed
+- name: frp | install
+  block:
+  - copy:
+      src: /tmp/dl/frp-{{frp_version}}/frps
+      dest: /usr/bin/frps
+      mode: 0755
+      remote_src: true
+    become: true
+    name: frp | install frps
+  - copy:
+      src: /tmp/dl/frp-{{frp_version}}/frpc
+      dest: /usr/bin/frpc
+      mode: 0755
+      remote_src: true
+    become: true
+    name: frp | install frpc
+  - copy:
+      src: /tmp/dl/frp-{{frp_version}}/frps.ini
+      dest: /etc/frp/frps.ini
+      mode: 0644
+      remote_src: true
+      force: false
+    become: true
+    name: frp | install frps.ini
+  - copy:
+      src: /tmp/dl/frp-{{frp_version}}/frpc.ini
+      dest: /etc/frp/frpc.ini
+      mode: 0644
+      remote_src: true
+      force: false
+    become: true
+    name: frp | install frpc.ini
+
