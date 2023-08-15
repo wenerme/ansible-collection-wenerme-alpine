@@ -1,6 +1,6 @@
 # Ansible Collection - wenerme.alpine
 
-A collection of tasks for managning AlpineLinux
+A collection of tasks for managing AlpineLinux
 
 - [wenerme.alpine](https://galaxy.ansible.com/wenerme/alpine) on galaxy
 
@@ -8,84 +8,57 @@ A collection of tasks for managning AlpineLinux
 ansible-galaxy collection install wenerme.alpine
 ```
 
+- alpine
+  - setup
+  - upgrade
 - apk
+- k3s
+- haproxy
 - consul
 - dnsmasq
 - docker
-- haproxy
 - k0s
-- k3s
 - n2n
 - nextcloud
 - ntp
 - pdns - PowerDNS
 - prometheus
-- setup
 - tinc
 - zerotier
 - zfs
 
-## Support Multi Inventory Structure
-
-- inv_name - inventory name
-- values.yaml - private local conf
-- all.yaml - inventory level conf
-
-```
-/<inventory-name>
-  /values.yaml
-  /inventory
-    /all.yaml
-  /files
-    /<service>.conf
-    /<hostname>
-      /<per-host>.conf
-  /credentials
-    /<op_rsa>
-    /<op_rsa>.pub
-```
-
-**all.yaml**
-
-```yaml
-all:
-  vars:
-    inv_name: "wener"
-    # Load local Values
-    Values: "{{ lookup('file', inv_name+'/values.yaml') | from_yaml }}"
-```
-
-```bash
-export ANSIBLE_INVENTORY=$PWD/<inv_name>/inventory
-```
-
-## Common Operations
+## Setup
 
 ```bash
 inv_name=wener
 export ANSIBLE_INVENTORY=$PWD/$inv_name/inventory
 
+# adhoc alias make life easier
+echo '- import_playbook: wenerme.alpine.adhoc' > adhoc.yaml
+adhoc(){ local task=$1;shift; ansible-playbook $PWD/adhoc.yaml -e task=$task $*; }
 
+# basic setup for alpine linux
+# root -> admin
+# same as:
+# adhoc setup-base
+# adhoc setup-base-service
+# adhoc hostname
+echo '- import_playbook: wenerme.alpine.setup' > setup.yaml
+ansible-playbook setup.yaml -e ansible_user=root
+
+# install tools for ops
+adhoc setup-ops
+```
+
+## Common Operations
+
+```bash
 # ansible-playbook inv-keygen.yaml
 # ssh-add $inv_name/credentials/admin_rsa
 
 # ansible-playbook inv-ssh-copy-id.yaml -e remote_user=root -k
 # ssh-copy-id ROOT for initial setup
 ssh-copy-id -i $inv_name/credentials/admin_rsa.pub -o PreferredAuthentications=password -o PubkeyAuthentication=no root@192.168.1.1
-
-# alias
-echo '- import_playbook: wenerme.alpine.adhoc' > adhoc.yaml
-adhoc(){ local task=$1;shift; ansible-playbook $PWD/adhoc.yaml -e task=$task $*; }
-
-# basic setup
-echo '- import_playbook: wenerme.alpine.setup' > setup.yaml
-ansible-playbook setup.yaml -e ansible_user=root
-
-# adhoc setup-base
-# adhoc setup-base-service
-# adhoc hostname
-
-adhoc setup-ops
 
 # do as you need
 # adhoc resizefs
@@ -111,6 +84,42 @@ adhoc k3s-service
 adhoc k3s-fetch-kubeconfig
 ```
 
-## Seealso
+## Convention
+
+- Service life cycle tasks
+  - `<SERVICE>-service`
+    - `<SERVICE>-install`
+    - `<SERVICE>-conf`
+  - `<SERVICE>-upgrade`
+  - `<SERVICE>-stop`
+  - `<SERVICE>-uninstall`
+- Notify
+  - `<SERVICE>.<ACTION>`
+    - Action - reload, restart
+- Inventory values
+  - `inv_name` - inventory name
+  - `Values` - load local values
+- Inventory structure
+  - `/<inv_name>/`
+    - `values.yaml`
+    - `inventory/`
+      - `all.yaml`
+    - `host/` - Host base configs
+      - `etc/`
+    - `<inventory_hostname>/`
+      - `backup/`
+      - `etc/` - Host config
+
+**all.yaml**
+
+```yaml
+all:
+  vars:
+    inv_name: "wener"
+    # Load local Values
+    Values: "{{ lookup('file', inv_name+'/values.yaml') | from_yaml }}"
+```
+
+## See also
 
 - [linux-system-roles/kernel_settings](https://github.com/linux-system-roles/kernel_settings)

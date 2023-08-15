@@ -1,21 +1,7 @@
-- name: haproxy | inline haproxy.cfg
-  become: true
-  copy:
-    dest: /etc/haproxy/haproxy.cfg
-    content: "{{ haproxy_conf_inline }}"
-    mode: preserve
-  when: haproxy_conf_inline is defined
-  notify: haproxy-reload
-
-- name: haproxy | host haproxy.cfg
-  become: true
-  copy:
-    dest: /etc/haproxy/haproxy.cfg
-    src: '{{haproxy_cfg_file}}'
-    mode: preserve
+- include_tasks: copy-conf.yaml
   vars:
-    haproxy_cfg_file: "{{inv_name}}/files/{{inventory_hostname}}/haproxy.cfg"
-  when:
-  - inv_name is defined
-  - "haproxy_cfg_file is file"
-  notify: haproxy-reload
+    dest: "{{item}}"
+    notify: haproxy.reload
+  loop:
+  - /etc/haproxy/haproxy.cfg
+

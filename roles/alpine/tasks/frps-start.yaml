@@ -1,0 +1,6 @@
+- name: frps | start
+  service:
+    name: frps
+    state: started
+    enabled: true
+  become: true

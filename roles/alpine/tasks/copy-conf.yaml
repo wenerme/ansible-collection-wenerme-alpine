@@ -1,0 +1,33 @@
+# dest
+# src
+# conf_files
+
+- ansible.builtin.set_fact:
+    src: "{{ lookup('ansible.builtin.first_found', conf_files|default(_conf_files)) }}"
+  vars:
+    _inv_name: "{{inv_name | default('.')}}"
+    _conf_files:
+    - '{{_inv_name}}/{{inventory_hostname}}{{dest}}.j2'
+    - '{{_inv_name}}/{{inventory_hostname}}{{dest}}'
+    - '{{_inv_name}}/host/{{dest}}.j2'
+    - '{{_inv_name}}/host/{{dest}}'
+  when: src is undefined
+
+
+- block:
+  - copy:
+      src: "{{src}}"
+      dest: "{{dest}}"
+    when:
+    - "src is not regex('[.]j2$')"
+    name: conf | copy {{dest}}
+  - template:
+      src: "{{src}}"
+      dest: "{{dest}}"
+    when:
+    - "src is regex('[.]j2$')"
+    name: conf | tpl {{dest}}
+  when:
+  - 'src is file'
+  become: true
+  notify: "{{notify|default([])}}"

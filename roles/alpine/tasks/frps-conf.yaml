@@ -2,7 +2,7 @@
   vars:
     dest: "{{item}}"
     notify:
-    - frpc.reload
+    - frps.reload
   loop:
-  - /etc/conf.d/frpc
-  - /etc/frp/frpc.ini
+  - /etc/conf.d/frps
+  - /etc/frp/frps.ini

@@ -1,3 +1,7 @@
+# VARS:
+# alpine_upgrade_release
+# reboot
+
 - block:
   - stat:
       path: /etc/alpine-release.apk-new
@@ -34,8 +38,11 @@
   meta: end_play
   when: alpine_release == alpine_upgrade_release
 
-- import_tasks: apk-repo.yaml
-- import_tasks: apk-version.yaml
+- block:
+  - import_tasks: apk-repo.yaml
+  - import_tasks: apk-version.yaml
+  vars:
+    alpine_release: "{{ alpine_upgrade_release }}"
 
 - name: alpine | no packages to upgrade
   meta: end_play
@@ -50,10 +57,12 @@
     name: alpine
     tasks_from: apk-upgrade
 
-- pause:
-    seconds: 5
-    prompt: reboot in 5 seconds
-  name: alpine | reboot
-- name: reboot
-  become: true
-  raw: reboot
+- block:
+  - pause:
+      seconds: 5
+      prompt: reboot in 5 seconds
+    name: alpine | reboot
+  - name: reboot
+    become: true
+    raw: reboot
+  when: "reboot|default(true)|bool"

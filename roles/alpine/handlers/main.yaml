@@ -130,11 +130,11 @@
   become: true
   service: name=samba state=reloaded
 
-- name: haproxy-reload
+- name: haproxy.reload
   become: true
   service: name=haproxy state=reloaded
 
-- name: sockd-reload
+- name: sockd.reload
   become: true
   command: service sockd --ifstarted restart
 
@@ -149,9 +149,16 @@
   become: true
   command: service k3s --ifstarted restart
 
+- name: frps.restart
+  service: name=frps state=restarted
+  become: true
+- name: frps.reloaded
+  service: name=frps state=reloaded
+  become: true
+
 - name: frpc.restart
-  service:
-    name: frpc
-    state: restarted
-    enabled: true
+  service: name=frpc state=restarted
+  become: true
+- name: frpc.reloaded
+  service: name=frpc state=reloaded
   become: true

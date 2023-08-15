@@ -1,32 +1,53 @@
-- name: get alpine-release
-  slurp:
-    src: "/etc/alpine-release"
-  register: slurp_result
+# SET FACT
+# - alpine_release
+# - alpine_version
+# - alpine_arch
+# - linux_kernel_flavor
 
-- name: linux kernel flavor
-  raw: sh -c "uname -r | egrep -o '\w+$' | tr -d '\n'"
-  register: flavor_result
-  changed_when: false
+- block:
+  - stat:
+      path: /etc/alpine-release.apk-new
+    register: result
+  - name: alpine | use alpine-release.apk-new
+    shell: mv /etc/alpine-release.apk-new /etc/alpine-release
+    become: true
+    when: result.stat.exists
+  - name: alpine | release
+    slurp:
+      src: "/etc/alpine-release"
+    register: result
+  - set_fact:
+      alpine_release: "{{ result.content | b64decode | trim }}"
+  when: alpine_release is not defined
 
-- name: apk arch
-  raw: sh -c "apk --print-arch | tr -d '\n'"
-  register: arch_result
-  changed_when: false
-
-- name: set version
+- name: alpine | version
   set_fact:
-    alpine_version: "{{ slurp_result.content | b64decode | regex_search('^[0-9]+[.][0-9]+') }}"
-    alpine_major_version: "{{ slurp_result.content | b64decode | regex_search('^[0-9]+[.][0-9]+') }}"
-    alpine_full_version: "{{ slurp_result.content | b64decode | regex_search('^[^\n\r]+') }}"
-    alpine_arch: "{{ arch_result.stdout }}"
-    linux_kernel_flavor: "{{ flavor_result.stdout }}"
+    alpine_version: "{{ alpine_release | regex_search('^[0-9]+[.][0-9]+') }}"
 
-- name: debug alpine-preset
+- block:
+  - name: alpine | kernel flavor
+    shell: uname -r | grep -E -o '\w+$' | tr -d '\n'
+    register: result
+    changed_when: false
+  - set_fact:
+      linux_kernel_flavor: "{{ result.stdout }}"
+  when: linux_kernel_flavor is not defined
+
+- block:
+  - name: alpine | apk arch
+    shell: apk --print-arch
+    register: result
+    changed_when: false
+  - set_fact:
+      alpine_arch: "{{ result.stdout | trim }}"
+  when: alpine_arch is not defined
+
+- name: alpine | preset
   debug:
     msg:
-      - "Alpine Full Version: {{ alpine_full_version }}"
-      - "Alpine Major Version: {{ alpine_major_version }}"
-      - "Apk Arch: {{ alpine_arch }}"
+      - "Alpine Release: {{ alpine_release }}"
+      - "Alpine Version: {{ alpine_version }}"
+      - "APK Arch: {{ alpine_arch }}"
       - "Kernel Flavor: {{ linux_kernel_flavor }}"
   tags:
     - debug

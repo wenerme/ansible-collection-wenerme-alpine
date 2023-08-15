@@ -10,7 +10,7 @@
     - community
   when: apk_repo is not defined
 
-- name: apk repo | add  apk_repo
+- name: apk repo | add apk_repo
   become: true
   lineinfile:
     path: /etc/apk/repositories
