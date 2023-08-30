@@ -1,18 +1,23 @@
 # dest
 # src
 # conf_files
+# skip
 
-- ansible.builtin.set_fact:
-    src: "{{ lookup('ansible.builtin.first_found', conf_files|default(_conf_files)) }}"
+- block:
+  - ansible.builtin.set_fact:
+      src: "{{ lookup('ansible.builtin.first_found', conf_files|default(_conf_files)) }}"
+    name: conf | find  {{dest}} for host {{inventory_hostname}}
+  rescue:
+  - debug:
+      msg: "{{_conf_files}}"
+  when: src|default(None) == None
   vars:
     _inv_name: "{{inv_name | default('.')}}"
     _conf_files:
-    - '{{_inv_name}}/{{inventory_hostname}}{{dest}}.j2'
-    - '{{_inv_name}}/{{inventory_hostname}}{{dest}}'
-    - '{{_inv_name}}/host/{{dest}}.j2'
-    - '{{_inv_name}}/host/{{dest}}'
-  when: src is undefined
-
+    - '{{file_dir}}/{{inventory_hostname}}/{{dest}}.j2'
+    - '{{file_dir}}/{{inventory_hostname}}/{{dest}}'
+    - '{{file_dir}}/host/{{dest}}.j2'
+    - '{{file_dir}}/host/{{dest}}'
 
 - block:
   - copy:
@@ -20,14 +25,20 @@
       dest: "{{dest}}"
     when:
     - "src is not regex('[.]j2$')"
-    name: conf | copy {{dest}}
+    name: conf | copy {{src}} to {{dest}}
   - template:
       src: "{{src}}"
       dest: "{{dest}}"
     when:
     - "src is regex('[.]j2$')"
-    name: conf | tpl {{dest}}
+    name: conf | tpl {{src}} to {{dest}}
   when:
-  - 'src is file'
+  - src|default(None) != None
+  - src is file
   become: true
   notify: "{{notify|default([])}}"
+
+# unset
+- set_fact:
+    src:
+    dest:

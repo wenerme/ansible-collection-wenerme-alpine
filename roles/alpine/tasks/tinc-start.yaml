@@ -1,0 +1,16 @@
+- name: tinc | start tincd.{{ tinc_netname }} service
+  become: true
+  service:
+    name: tincd.{{ tinc_netname }}
+    state: started
+    enabled: true
+  when: tinc_netname is defined
+
+- name: tinc | start tincd.{{ item }} service
+  become: true
+  service:
+    name: tincd.{{ item }}
+    state: started
+    enabled: true
+  when: tinc_netnames is defined
+  loop: "{{ tinc_netnames }}"

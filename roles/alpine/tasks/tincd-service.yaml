@@ -1,4 +1,0 @@
-- include_tasks: tinc-install.yaml
-- include_tasks: tinc-conf.yaml
-
-- include_tasks: tincd-service-enable.yaml

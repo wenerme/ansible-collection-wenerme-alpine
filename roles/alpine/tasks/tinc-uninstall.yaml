@@ -1,0 +1,20 @@
+- name: tinc | uninstall tinc.{{ tinc_netname }}
+  become: true
+  file:
+    dest: /etc/init.d/tinc.{{ tinc_netname }}
+    state: absent
+  when: tinc_netname is defined
+
+- name: tinc | uninstall tinc.{{ item }}
+  become: true
+  file:
+    dest: /etc/init.d/tinc.{{ item }}
+    state: absent
+  when: tinc_netnames is defined
+  loop: "{{ tinc_netnames }}"
+
+- name: tinc | uninstall tinc.netname
+  become: true
+  file:
+    dest: /etc/init.d/tinc.netname
+    state: absent

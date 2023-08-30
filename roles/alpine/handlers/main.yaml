@@ -152,13 +152,13 @@
 - name: frps.restart
   service: name=frps state=restarted
   become: true
-- name: frps.reloaded
+- name: frps.reload
   service: name=frps state=reloaded
   become: true
 
 - name: frpc.restart
   service: name=frpc state=restarted
   become: true
-- name: frpc.reloaded
+- name: frpc.reload
   service: name=frpc state=reloaded
   become: true

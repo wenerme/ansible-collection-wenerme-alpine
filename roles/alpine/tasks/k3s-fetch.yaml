@@ -1,3 +1,9 @@
+- name: k3s | prepare
+  become: true
+  apk:
+    name: [curl, jq]
+    state: present
+
 - name: k3s | arch of {{ansible_architecture}}
   block:
   - name: setup ansible_architecture
@@ -12,7 +18,8 @@
   - shell: |
       curl -sf https://update.k3s.io/v1-release/channels | jq -r '.data[] | select(.id == "stable") | .latest'
     register: result
-    name: fetch latest version
+    name: k3s | fetch latest version
+    changed_when: false
   - set_fact:
       k3s_version: "{{ result.stdout }}"
   when: k3s_version is undefined
@@ -37,7 +44,7 @@
       url: https://ghproxy.com/github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s
       dest: /data/opt/k3s/k3s-{{k3s_version}}
       mode: 0755
-    name: k3s | fetch
+    name: k3s | fetch binary
     when: k3s_arch == 'amd64'
   - get_url:
       url: https://ghproxy.com/github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s-{{k3s_arch}}
@@ -56,6 +63,7 @@
       cd /data/opt/k3s
       sha256sum -c sha256sum-{{k3s_version}}.txt --ignore-missing
     name: k3s | checksum
+    changed_when: false
   rescue:
   - file:
       path: /data/opt/k3s/k3s-{{k3s_version}}

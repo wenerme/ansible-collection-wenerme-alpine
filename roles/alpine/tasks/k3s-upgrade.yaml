@@ -5,17 +5,23 @@
     name: k3s
     state: stopped
     runlevel: default
+  when: service is undefined or service
 
 # fetch
 - include_tasks: k3s-fetch.yaml
+  when: fetch is undefined or fetch
 
 # upgrade
+- stat:
+    path: /usr/local/bin/k3s
+  register: result
 - name: k3s | backup last
   copy:
     src: /usr/local/bin/k3s
     dest: /data/opt/k3s/k3s.last
     mode: 0755
     remote_src: true
+  when: result.stat.exists
 
 - name: k3s | install
   become: true
@@ -32,3 +38,4 @@
     name: k3s
     state: started
     runlevel: default
+  when: service is undefined or service

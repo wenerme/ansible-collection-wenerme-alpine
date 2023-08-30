@@ -12,12 +12,14 @@ ansible-galaxy collection install wenerme.alpine
   - setup
   - upgrade
 - apk
-- k3s
-- haproxy
 - consul
 - dnsmasq
 - docker
+- frpc
+- frps
+- haproxy
 - k0s
+- k3s
 - n2n
 - nextcloud
 - ntp
@@ -26,6 +28,7 @@ ansible-galaxy collection install wenerme.alpine
 - tinc
 - zerotier
 - zfs
+- [ ] aports
 
 ## Setup
 

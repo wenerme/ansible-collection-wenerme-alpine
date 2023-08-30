@@ -4,4 +4,3 @@
     notify: haproxy.reload
   loop:
   - /etc/haproxy/haproxy.cfg
-
