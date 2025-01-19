@@ -1,4 +1,4 @@
-- name: log | base packages
+- name: logrotate | install
   become: true
   apk:
     name: "{{ item }}"
@@ -6,13 +6,19 @@
   - logrotate
 - name: syslog | /etc/syslog.conf
   become: true
-  copy:
-    content: |
-      kern.*  /var/log/kern.log
-      *.*     /var/log/messages
-    dest: /etc/syslog.conf
+  lineinfile:
+    line: "{{ item.line }}"
+    regexp: "{{ item.regexp }}"
+    path: /etc/syslog.conf
     mode: 0644
+    create: true
   register: result
+  loop:
+  - line: 'kern.*  /var/log/kern.log'
+    regexp: '/var/log/kern.log$'
+  - line: '*.*     /var/log/messages'
+    regexp: '/var/log/messages$'
+
 - name: syslog | restart
   become: true
   service:

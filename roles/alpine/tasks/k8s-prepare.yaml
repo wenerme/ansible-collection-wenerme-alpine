@@ -86,7 +86,7 @@
     validate: sshd -T -C user=nobody -f %s
   loop:
     - { name: AllowTcpForwarding, value: 'yes' }
-  notify: sshd-restart
+  notify: sshd.restart
 
 # Error response from daemon: linux mounts: path /var/lib/rancher is mounted on / but it is not a shared mount
 # findmnt -o TARGET,PROPAGATION /

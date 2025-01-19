@@ -5,17 +5,22 @@
 
 - block:
   - ansible.builtin.set_fact:
-      src: "{{ lookup('ansible.builtin.first_found', conf_files|default(_conf_files)) }}"
+      src: "{{ lookup('ansible.builtin.first_found', conf_files|default(_conf_files)) | default('') }}"
     name: conf | find  {{dest}} for host {{inventory_hostname}}
   rescue:
   - debug:
       msg: "{{_conf_files}}"
+    name: conf | {{dest}} not found for host {{inventory_hostname}}
   when: src|default(None) == None
   vars:
-    _inv_name: "{{inv_name | default('.')}}"
+    # file_dir already point to inv
+    #_inv_name: "{{inv_name | default('.')}}"
+    _inv_group: "{{inv_group | default('.')}}"
     _conf_files:
     - '{{file_dir}}/{{inventory_hostname}}/{{dest}}.j2'
     - '{{file_dir}}/{{inventory_hostname}}/{{dest}}'
+    - '{{file_dir}}/{{_inv_group}}/{{dest}}.j2'
+    - '{{file_dir}}/{{_inv_group}}/{{dest}}'
     - '{{file_dir}}/host/{{dest}}.j2'
     - '{{file_dir}}/host/{{dest}}'
 
@@ -40,5 +45,5 @@
 
 # unset
 - set_fact:
-    src:
     dest:
+    src:

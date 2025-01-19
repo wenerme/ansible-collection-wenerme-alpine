@@ -1,15 +1,15 @@
-- name: tinc | start tincd.{{ tinc_netname }} service
+- name: tinc | start tinc.{{ tinc_netname }} service
   become: true
   service:
-    name: tincd.{{ tinc_netname }}
+    name: tinc.{{ tinc_netname }}
     state: started
     enabled: true
   when: tinc_netname is defined
 
-- name: tinc | start tincd.{{ item }} service
+- name: tinc | start tinc.{{ tinc_netnames }} service
   become: true
   service:
-    name: tincd.{{ item }}
+    name: tinc.{{ item }}
     state: started
     enabled: true
   when: tinc_netnames is defined

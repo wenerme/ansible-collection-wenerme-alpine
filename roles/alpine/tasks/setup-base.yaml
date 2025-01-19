@@ -137,7 +137,7 @@
   # - { name: Banner, value: '/etc/issue' }
   # alpine has no pam by default
   # - { name: UsePAM, value: 'no' }
-  notify: sshd-restart
+  notify: sshd.restart
 
 # misc
 # --------------------

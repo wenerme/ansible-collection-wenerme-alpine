@@ -2,8 +2,6 @@
   become: true
   apk:
     name: "{{ item }}"
-    # support metrcs
-    repository: https://mirrors.aliyun.com/alpine/edge/main/
   loop:
     - haproxy
 

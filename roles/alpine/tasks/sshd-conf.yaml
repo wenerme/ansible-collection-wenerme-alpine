@@ -1,4 +1,4 @@
-- name: sshd_config
+- name: ssh | sshd_config
   become: true
   lineinfile:
     path: /etc/ssh/sshd_config
@@ -8,5 +8,5 @@
     insertbefore: '^\s*Match\s+'
     validate: sshd -T -C user=nobody -f %s
   with_items: "{{ sshd_conf }}"
-  notify: sshd-restart
+  notify: sshd.reload
   when: sshd_conf is defined

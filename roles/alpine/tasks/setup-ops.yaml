@@ -22,7 +22,8 @@
     # for dig
     - bind-tools
     # info
-    - neofetch
+    #- neofetch
+    - fastfetch
     - util-linux
     - util-linux-bash-completion
     # sshrc needs

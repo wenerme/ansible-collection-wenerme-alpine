@@ -1,10 +1,10 @@
 # 注意
 # * 不支持 reload 则使用 shell: service privoxy --ifstarted restart 避免服务启动
 
-- name: sshd-restart
+- name: sshd.restart
   become: true
   service: name=sshd state=restarted
-- name: sshd-reload
+- name: sshd.reload
   become: true
   service: name=sshd state=reloaded
 
@@ -52,16 +52,17 @@
   become: true
   service: name=slapd state=restarted
 
-- name: tinc-restart
+- name: tinc.restart
   become: true
   # service: name=tincd state=restarted
   # shell: |
   #   [ -f /etc/init.d/tincd.{{ tinc_netname }} ] &&
   #   service tincd.{{ tinc_netname }} ||
   #   { tinc pid && tinc restart || tinc start; }
-  command: service tincd.{{ tinc_netname }} --ifstarted restart
+  command: service tinc.{{ tinc_netname }} --ifstarted restart
   environment:
     NETNAME: "{{ tinc_netname }}"
+
 - name: tinc-reload
   become: true
   # service: name=tincd state=reloaded

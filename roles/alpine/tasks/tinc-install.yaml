@@ -79,7 +79,7 @@
     state: link
   when: tinc_netname is defined
 
-- name: tinc | install tinc.{{ item }}
+- name: tinc | install tinc.netname
   become: true
   file:
     dest: /etc/init.d/tinc.{{ item }}

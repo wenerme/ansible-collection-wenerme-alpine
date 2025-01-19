@@ -2,7 +2,14 @@
 
 - import_tasks: docker-daemon-conf.yaml
 
-- name: start docker on bootstrap
+- name: cgroups | enable
+  become: true
+  service:
+    name: cgroups
+    enabled: true
+    state: started
+
+- name: docker | start on bootstrap
   become: true
   service:
     name: docker
