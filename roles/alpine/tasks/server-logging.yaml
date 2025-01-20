@@ -37,3 +37,11 @@
     name: klogd
     state: started
     enabled: true
+
+- name: dmesg | keep previous
+  become: true
+  lineinfile:
+    path: /etc/conf.d/bootmisc
+    regexp: '^[#\s*]previous_dmesg\s*=.*'
+    line: 'previous_dmesg=yes'
+    state: present

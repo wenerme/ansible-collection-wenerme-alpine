@@ -6,7 +6,7 @@
 alpine_mirror: https://mirrors.tuna.tsinghua.edu.cn/alpine
 
 # docker mirror
-docker_mirror: https://docker.mirrors.ustc.edu.cn
+# docker_mirror: https://docker.mirrors.ustc.edu.cn
 
 # ssh pubkey for admin account
 admin_pubkey_path: credentials/admin_rsa.pub

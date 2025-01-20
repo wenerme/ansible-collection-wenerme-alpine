@@ -6,6 +6,9 @@
   - wenerme.alpine
   gather_facts: false
   tasks:
+  - import_role:
+      role: alpine
+      tasks_from: ensure-python
   - name: setup | ensure admin
     stat:
       path: /home/admin
@@ -20,7 +23,7 @@
     - set_fact:
         ansible_ssh_user: admin
     when: result.stat.exists == false
-  - gather_facts: {}
+  - gather_facts: { }
   - import_role:
       role: alpine
       tasks_from: setup-base-service
